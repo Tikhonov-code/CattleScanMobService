@@ -1,0 +1,108 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title>Test Live </title>
+    <script src="Scripts/jquery-3.5.1.min.js"></script>
+    <script src="Scripts/jquery-3.5.1.js"></script>
+    <script type="text/javascript">
+        //1. Login Post
+        function SendPostLogin() {
+            //-------------------------------------------
+            var url = "http://193.27.73.63/Mob_service/Default.aspx?action=mob_0";
+            //var url = "Default.aspx?action=mob_0";
+            var Param = {};
+            Param.email = $("#email")[0].value;;
+            Param.password = $("#password")[0].value;
+            Param.token = null;
+
+            myPost(url, Param);
+            //myAjaxRequestJsonE(url, Param, Success_SendPostLogin, Error_SendPostLogin);
+        }
+        function Success_SendPostLogin(result) {
+            $("#Token").val(result);
+            return true;
+        }
+        function Error_SendPostLogin(xhr, status, error) {
+            $("#demo").html(error);
+            return false;
+        }
+        //2. request Farm stat info
+        function GetFarmCowsInfo() {
+            //-------------------------------------------
+            var url = "http://193.27.73.63/Mob_service/Default.aspx?action=mob_1";
+            //var url = "Default.aspx?action=mob_1";
+            var Param = {};
+            Param.email = $("#email")[0].value;;
+            Param.password = null;
+            Param.token = $("#Token")[0].value;
+
+            myAjaxRequestJsonE(url, Param, Success_GetFarmCowsInfo, Error_GetFarmCowsInfo);
+        }
+        function Success_GetFarmCowsInfo(result) {
+            $("#demo").text(JSON.stringify(result));
+            return true;
+        }
+        function Error_GetFarmCowsInfo(xhr, status, error) {
+            $("#demo").html(error);
+            return false;
+        }
+        //General Section-----------------------------------
+        function myAjaxRequestJsonE(URL, Param, Success_function_name, Error_function_name) {
+            //var obj = {};
+            //obj.DateSearch = Param;
+            $.ajax({
+                type: "POST",
+                url: URL,
+                data: JSON.stringify(Param),
+                contentType: "application/json; charset=utf-8",
+                //headers: { "Access-Control-Allow-Origin": "*" },
+                dataType: "json",
+                success: Success_function_name,
+                error: Error_function_name
+                //httpWebRequest.Method = "POST";
+                //httpWebRequest.Headers.Add("Access-Control-Allow-Origin", "*");
+            });
+            return false;
+        }
+        function myPost(URL,data) {
+            //const data = { username: 'example' };
+
+            fetch(URL, {
+                method: 'POST', // or 'PUT'
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Access-Control-Allow-Origin': '*',
+                },
+                body: JSON.stringify(data),
+            })
+                .then(response => response.json())
+                .then(data => {
+                    console.log('Success:', data);
+                })
+                .catch((error) => {
+                    console.error('Error:', error);
+                });
+        }
+
+    </script>
+</head>
+<body>
+    <p>http://193.27.73.63/Mob_service/Default.aspx</p>
+    <table style="width:50%; border-style:solid;">
+        <tr>
+            <td>Email:<input id="email" type="text" value="mobil@mob.mo" /></td>
+            <td>Password:</td>
+            <td><input id="password" type="text" value="09ebc5cb5447dd77465cf1001634943a" style="width:250px;" /></td>
+            <td><input id="Button1" type="button" value="Login" style="background-color:chartreuse;" onclick="SendPostLogin();" /></td>
+        </tr>
+        <tr><td>Token=<input id="Token" type="text" style="width:450px;" /></td><td>&nbsp;</td><td>&nbsp;</td></tr>
+        <tr>
+            <td>&nbsp;</td>
+            <td>&nbsp;</td>
+            <td><input id="Button2" type="button" value="Get Farm Cows Info" style="background-color:chartreuse;" onclick="GetFarmCowsInfo();" /></td>
+        </tr>
+    </table>
+    <div id="demo"></div>
+</body>
+</html>

@@ -1,0 +1,702 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<edmx:Edmx Version="3.0" xmlns:edmx="http://schemas.microsoft.com/ado/2009/11/edmx">
+  <!-- EF Runtime content -->
+  <edmx:Runtime>
+    <!-- SSDL content -->
+    <edmx:StorageModels>
+    <Schema Namespace="DB_A4A060_csModel.Store" Provider="System.Data.SqlClient" ProviderManifestToken="2012" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
+        <EntityType Name="Bolus">
+          <Key>
+            <PropertyRef Name="id" />
+          </Key>
+          <Property Name="id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="bolus_id" Type="int" Nullable="false" />
+          <Property Name="animal_id" Type="int" />
+          <Property Name="AnimalInfo" Type="nvarchar" MaxLength="500" />
+          <Property Name="Age_Lactation" Type="int" />
+          <Property Name="Current_Stage_Of_Lactation" Type="nvarchar" MaxLength="10" />
+          <Property Name="Health_Concerns_Illness_History" Type="nvarchar" MaxLength="500" />
+          <Property Name="Overall_Health" Type="nvarchar" MaxLength="10" />
+          <Property Name="Comments" Type="nvarchar" MaxLength="500" />
+          <Property Name="Date_of_Birth" Type="datetime" />
+          <Property Name="Calving_Due_Date" Type="datetime" />
+          <Property Name="Actual_Calving_Date" Type="datetime" />
+          <Property Name="status" Type="bit" Nullable="false" />
+        </EntityType>
+        <EntityType Name="Farms">
+          <Key>
+            <PropertyRef Name="id" />
+          </Key>
+          <Property Name="id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="Name" Type="nvarchar" MaxLength="350" />
+          <Property Name="Owner" Type="nvarchar" MaxLength="350" />
+          <Property Name="GeoPosition" Type="geography" />
+          <Property Name="AspNetUser_Id" Type="nvarchar" MaxLength="128" />
+          <Property Name="Phones" Type="nvarchar(max)" />
+          <Property Name="Emails" Type="nvarchar(max)" />
+          <Property Name="PhoneStatus" Type="nvarchar(max)" />
+          <Property Name="EmailStatus" Type="nvarchar(max)" />
+        </EntityType>
+        <EntityType Name="FermerComments">
+          <Key>
+            <PropertyRef Name="id" />
+          </Key>
+          <Property Name="id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="bolus_id" Type="int" Nullable="false" />
+          <Property Name="animal_id" Type="int" />
+          <Property Name="user_id" Type="nvarchar" MaxLength="128" />
+          <Property Name="time_stamp" Type="datetime2" Precision="7" />
+          <Property Name="comment" Type="nvarchar" MaxLength="300" />
+          <Property Name="status_read" Type="bit" Nullable="false" />
+        </EntityType>
+        <EntityType Name="MeasData">
+          <Key>
+            <PropertyRef Name="id" />
+          </Key>
+          <Property Name="id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="user_id" Type="varchar" MaxLength="50" Nullable="false" />
+          <Property Name="bolus_id" Type="int" Nullable="false" />
+          <Property Name="animal_id" Type="varchar" MaxLength="50" Nullable="false" />
+          <Property Name="temperature" Type="float" Nullable="false" />
+          <Property Name="bolus_timestamp" Type="varchar" MaxLength="50" Nullable="false" />
+          <Property Name="bolus_full_date" Type="datetime2" Precision="7" />
+          <Property Name="base_station_id" Type="int" Nullable="false" />
+          <Property Name="is_average" Type="bit" Nullable="false" />
+          <Property Name="raw" Type="varchar" MaxLength="64" />
+        </EntityType>
+        <EntityType Name="MOB_EventFeedback">
+          <Key>
+            <PropertyRef Name="id" />
+          </Key>
+          <Property Name="id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="event_id" Type="int" Nullable="false" />
+          <Property Name="visual_symptoms" Type="bit" Nullable="false" />
+          <Property Name="rectal_temperature" Type="float" />
+          <Property Name="rectal_temperature_measuring_time" Type="datetime2" Precision="7" />
+          <Property Name="treatment_note" Type="nvarchar" MaxLength="300" />
+          <Property Name="general_note" Type="nvarchar" MaxLength="300" />
+        </EntityType>
+        <EntityType Name="Mob_Events">
+          <Key>
+            <PropertyRef Name="id" />
+          </Key>
+          <Property Name="id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="bolus_id" Type="int" Nullable="false" />
+          <Property Name="diagnosis" Type="nvarchar" MaxLength="100" />
+          <Property Name="comment" Type="nvarchar" MaxLength="300" />
+          <Property Name="selected_date" Type="datetime2" Precision="7" />
+        </EntityType>
+        <EntityType Name="Mob_Token">
+          <Key>
+            <PropertyRef Name="id" />
+          </Key>
+          <Property Name="id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="username" Type="nvarchar" MaxLength="250" />
+          <Property Name="hashcode" Type="nvarchar" MaxLength="256" />
+          <Property Name="datetime_exp" Type="datetime2" Precision="7" />
+        </EntityType>
+        <EntityType Name="Mob_Users">
+          <Key>
+            <PropertyRef Name="id" />
+          </Key>
+          <Property Name="id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="email" Type="nvarchar" MaxLength="250" />
+          <Property Name="passwordMD5" Type="nvarchar" MaxLength="128" />
+          <Property Name="AspNetUser_ID" Type="nvarchar" MaxLength="128" />
+        </EntityType>
+        <EntityType Name="Z_AlertLogs">
+          <Key>
+            <PropertyRef Name="id" />
+          </Key>
+          <Property Name="id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="bolus_id" Type="int" Nullable="false" />
+          <Property Name="event" Type="varchar" MaxLength="10" />
+          <Property Name="message" Type="varchar" MaxLength="500" />
+          <Property Name="date_emailsent" Type="datetime2" Precision="7" />
+          <Property Name="email" Type="varchar" MaxLength="100" />
+          <Property Name="read" Type="bit" />
+        </EntityType>
+        <Function Name="ChartsXY_temp" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+          <Parameter Name="dt1" Type="datetime2" Mode="In" />
+          <Parameter Name="dt2" Type="datetime2" Mode="In" />
+          <Parameter Name="bolus_id" Type="int" Mode="In" />
+          <Parameter Name="Interval" Type="float" Mode="In" />
+        </Function>
+        <Function Name="DataGapsFarm" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+          <Parameter Name="dt" Type="datetime2" Mode="In" />
+          <Parameter Name="interval" Type="int" Mode="In" />
+          <Parameter Name="user_id" Type="varchar" Mode="In" />
+        </Function>
+        <Function Name="MOB_AlertEventsByDateUserID" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+          <Parameter Name="user_id" Type="varchar" Mode="In" />
+          <Parameter Name="dt" Type="datetime" Mode="In" />
+        </Function>
+        <Function Name="MOB_Farm_TodayEventsList" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+          <Parameter Name="user_id" Type="nvarchar" Mode="In" />
+          <Parameter Name="dt" Type="datetime2" Mode="In" />
+          <Parameter Name="event" Type="nvarchar" Mode="In" />
+        </Function>
+        <Function Name="MOB_Get_AlertDetailsById" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+          <Parameter Name="alert_id" Type="int" Mode="In" />
+        </Function>
+        <Function Name="MOB_Get_AlertListByUserID" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+          <Parameter Name="user_id" Type="nvarchar" Mode="In" />
+          <Parameter Name="bolus_id" Type="int" Mode="In" />
+          <Parameter Name="page" Type="int" Mode="In" />
+          <Parameter Name="total_pages" Type="int" Mode="InOut" />
+        </Function>
+        <Function Name="MOB_GET_AnimalListByUserID" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+          <Parameter Name="user_id" Type="nvarchar" Mode="In" />
+        </Function>
+        <Function Name="MOB_GetCowDetails" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+          <Parameter Name="bolus_id" Type="int" Mode="In" />
+        </Function>
+        <Function Name="MOB_GetFarmCowsInfo" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+          <Parameter Name="user_id" Type="nvarchar" Mode="In" />
+        </Function>
+        <Function Name="SP_GET_Farm_TotalAlertsPeriod" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+          <Parameter Name="dt" Type="datetime2" Mode="In" />
+          <Parameter Name="user_id" Type="nvarchar" Mode="In" />
+          <Parameter Name="days" Type="int" Mode="In" />
+          <Parameter Name="event" Type="nvarchar" Mode="In" />
+          <Parameter Name="result" Type="int" Mode="InOut" />
+        </Function>
+        <Function Name="SP_GET_FarmLostCows" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+          <Parameter Name="user_id" Type="nvarchar" Mode="In" />
+          <Parameter Name="interval_hours" Type="int" Mode="In" />
+          <Parameter Name="dt_toronto" Type="datetime" Mode="In" />
+        </Function>
+        <Function Name="WaterIntakes_sig" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+          <Parameter Name="dt1" Type="datetime2" Mode="In" />
+          <Parameter Name="dt2" Type="datetime2" Mode="In" />
+          <Parameter Name="bolus_id" Type="int" Mode="In" />
+          <Parameter Name="wi_calbr" Type="float" Mode="In" />
+        </Function>
+        <EntityContainer Name="DB_A4A060_csModelStoreContainer">
+          <EntitySet Name="Bolus" EntityType="Self.Bolus" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Farms" EntityType="Self.Farms" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="FermerComments" EntityType="Self.FermerComments" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="MeasData" EntityType="Self.MeasData" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="MOB_EventFeedback" EntityType="Self.MOB_EventFeedback" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Mob_Events" EntityType="Self.Mob_Events" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Mob_Token" EntityType="Self.Mob_Token" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Mob_Users" EntityType="Self.Mob_Users" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Z_AlertLogs" EntityType="Self.Z_AlertLogs" Schema="dbo" store:Type="Tables" />
+        </EntityContainer>
+      </Schema></edmx:StorageModels>
+    <!-- CSDL content -->
+    <edmx:ConceptualModels>
+      <Schema Namespace="DB_A4A060_csModel" Alias="Self" annotation:UseStrongSpatialTypes="false" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm">
+        <EntityType Name="Mob_Token">
+          <Key>
+            <PropertyRef Name="id" />
+          </Key>
+          <Property Name="id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="username" Type="String" MaxLength="250" FixedLength="false" Unicode="true" />
+          <Property Name="hashcode" Type="String" MaxLength="256" FixedLength="false" Unicode="true" />
+          <Property Name="datetime_exp" Type="DateTime" Precision="7" />
+        </EntityType>
+        <EntityContainer Name="DB_A4A060_csEntities" annotation:LazyLoadingEnabled="true">
+          <EntitySet Name="Mob_Token" EntityType="Self.Mob_Token" />
+          <EntitySet Name="Mob_Users" EntityType="DB_A4A060_csModel.Mob_Users" />
+          <FunctionImport Name="MOB_Farm_TodayEventsList" ReturnType="Collection(DB_A4A060_csModel.MOB_Farm_TodayEventsList_Result)">
+            <Parameter Name="user_id" Mode="In" Type="String" />
+            <Parameter Name="dt" Mode="In" Type="DateTime" />
+            <Parameter Name="event" Mode="In" Type="String" />
+          </FunctionImport>
+          <FunctionImport Name="DataGapsFarm" ReturnType="Collection(DB_A4A060_csModel.DataGapsFarm_Result)">
+            <Parameter Name="dt" Mode="In" Type="DateTime" />
+            <Parameter Name="interval" Mode="In" Type="Int32" />
+            <Parameter Name="user_id" Mode="In" Type="String" />
+          </FunctionImport>
+          <FunctionImport Name="SP_GET_FarmLostCows" ReturnType="Collection(DB_A4A060_csModel.SP_GET_FarmLostCows_Result)">
+            <Parameter Name="user_id" Mode="In" Type="String" />
+            <Parameter Name="interval_hours" Mode="In" Type="Int32" />
+            <Parameter Name="dt_toronto" Mode="In" Type="DateTime" />
+          </FunctionImport>
+          <FunctionImport Name="SP_GET_Farm_TotalAlertsPeriod">
+            <Parameter Name="dt" Mode="In" Type="DateTime" />
+            <Parameter Name="user_id" Mode="In" Type="String" />
+            <Parameter Name="days" Mode="In" Type="Int32" />
+            <Parameter Name="event" Mode="In" Type="String" />
+            <Parameter Name="result" Mode="InOut" Type="Int32" />
+          </FunctionImport>
+          <EntitySet Name="Farms" EntityType="DB_A4A060_csModel.Farm" />
+          <FunctionImport Name="ChartsXY_temp" ReturnType="Collection(DB_A4A060_csModel.ChartsXY_temp_Result)">
+            <Parameter Name="dt1" Mode="In" Type="DateTime" />
+            <Parameter Name="dt2" Mode="In" Type="DateTime" />
+            <Parameter Name="bolus_id" Mode="In" Type="Int32" />
+            <Parameter Name="Interval" Mode="In" Type="Double" />
+          </FunctionImport>
+          <FunctionImport Name="WaterIntakes_sig" ReturnType="Collection(DB_A4A060_csModel.WaterIntakes_sig_Result)">
+            <Parameter Name="dt1" Mode="In" Type="DateTime" />
+            <Parameter Name="dt2" Mode="In" Type="DateTime" />
+            <Parameter Name="bolus_id" Mode="In" Type="Int32" />
+            <Parameter Name="wi_calbr" Mode="In" Type="Double" />
+          </FunctionImport>
+          <EntitySet Name="MeasDatas" EntityType="DB_A4A060_csModel.MeasData" />
+          <EntitySet Name="FermerComments" EntityType="DB_A4A060_csModel.FermerComment" />
+          <FunctionImport Name="MOB_GET_AnimalListByUserID" ReturnType="Collection(DB_A4A060_csModel.MOB_GET_AnimalListByUserID_Result)">
+          <Parameter Name="user_id" Mode="In" Type="String" />
+          </FunctionImport>
+          <FunctionImport Name="MOB_GetFarmCowsInfo" ReturnType="Collection(DB_A4A060_csModel.MOB_GetFarmCowsInfo_Result)">
+          <Parameter Name="user_id" Mode="In" Type="String" />
+          </FunctionImport>
+          <FunctionImport Name="MOB_AlertEventsByDateUserID" ReturnType="Collection(DB_A4A060_csModel.MOB_AlertEventsByDateUserID_Result)">
+            <Parameter Name="user_id" Mode="In" Type="String" />
+            <Parameter Name="dt" Mode="In" Type="DateTime" />
+          </FunctionImport>
+          <EntitySet Name="Z_AlertLogs" EntityType="DB_A4A060_csModel.Z_AlertLogs" />
+          <FunctionImport Name="MOB_Get_AlertDetailsById" ReturnType="Collection(DB_A4A060_csModel.MOB_Get_AlertDetailsById_Result)">
+          <Parameter Name="alert_id" Mode="In" Type="Int32" />
+          </FunctionImport>
+          <FunctionImport Name="MOB_Get_AlertListByUserID" ReturnType="Collection(DB_A4A060_csModel.MOB_Get_AlertListByUserID_Result)">
+            <Parameter Name="user_id" Mode="In" Type="String" />
+            <Parameter Name="bolus_id" Mode="In" Type="Int32" />
+            <Parameter Name="page" Mode="In" Type="Int32" />
+            <Parameter Name="total_pages" Mode="InOut" Type="Int32" />
+          </FunctionImport>
+          <EntitySet Name="Bolus" EntityType="DB_A4A060_csModel.Bolu" />
+          <FunctionImport Name="MOB_GetCowDetails" ReturnType="Collection(DB_A4A060_csModel.MOB_GetCowDetails_Result)">
+          <Parameter Name="bolus_id" Mode="In" Type="Int32" />
+          </FunctionImport>
+          <EntitySet Name="MOB_EventFeedback" EntityType="DB_A4A060_csModel.MOB_EventFeedback" />
+          <EntitySet Name="Mob_Events" EntityType="DB_A4A060_csModel.Mob_Events" />
+        </EntityContainer>
+        <EntityType Name="Mob_Users">
+          <Key>
+            <PropertyRef Name="id" />
+          </Key>
+          <Property Name="id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="email" Type="String" MaxLength="250" FixedLength="false" Unicode="true" />
+          <Property Name="passwordMD5" Type="String" MaxLength="128" FixedLength="false" Unicode="true" />
+          <Property Name="AspNetUser_ID" Type="String" MaxLength="128" FixedLength="false" Unicode="true" />
+        </EntityType>
+        <ComplexType Name="DataGapsFarm_Result">
+          <Property Type="String" Name="r" Nullable="false" MaxLength="7" />
+          <Property Type="String" Name="Gaps" Nullable="true" MaxLength="30" />
+          <Property Type="String" Name="DateCtrl" Nullable="true" MaxLength="10" />
+        </ComplexType>
+        <ComplexType Name="SP_GET_FarmLostCows_Result">
+          <Property Type="Int32" Name="bolus_id" Nullable="true" />
+          <Property Type="String" Name="animal_id" Nullable="true" MaxLength="50" />
+          <Property Type="DateTime" Name="lastdate" Nullable="true" />
+          <Property Type="String" Name="Current_Stage_Of_Lactation" Nullable="true" MaxLength="10" />
+        </ComplexType>
+        <EntityType Name="Farm">
+          <Key>
+            <PropertyRef Name="id" />
+          </Key>
+          <Property Name="id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="Name" Type="String" MaxLength="350" FixedLength="false" Unicode="true" />
+          <Property Name="Owner" Type="String" MaxLength="350" FixedLength="false" Unicode="true" />
+          <Property Name="GeoPosition" Type="Geography" />
+          <Property Name="AspNetUser_Id" Type="String" MaxLength="128" FixedLength="false" Unicode="true" />
+          <Property Name="Phones" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="Emails" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="PhoneStatus" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="EmailStatus" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+        </EntityType>
+        <ComplexType Name="ChartsXY_temp_Result">
+          <Property Type="String" Name="t" Nullable="true" MaxLength="21" />
+          <Property Type="Double" Name="Temperature" Nullable="false" />
+        </ComplexType>
+        <ComplexType Name="WaterIntakes_sig_Result">
+          <Property Type="Int32" Name="id" Nullable="false" />
+          <Property Type="DateTime" Name="bolus_full_date" Nullable="true" />
+          <Property Type="Double" Name="intakes" Nullable="true" />
+        </ComplexType>
+        <EntityType Name="MeasData">
+          <Key>
+            <PropertyRef Name="id" />
+          </Key>
+          <Property Name="id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="user_id" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="bolus_id" Type="Int32" Nullable="false" />
+          <Property Name="animal_id" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="temperature" Type="Double" Nullable="false" />
+          <Property Name="bolus_timestamp" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="bolus_full_date" Type="DateTime" Precision="7" />
+          <Property Name="base_station_id" Type="Int32" Nullable="false" />
+          <Property Name="is_average" Type="Boolean" Nullable="false" />
+          <Property Name="raw" Type="String" MaxLength="64" FixedLength="false" Unicode="false" />
+        </EntityType>
+        <EntityType Name="FermerComment">
+          <Key>
+            <PropertyRef Name="id" />
+          </Key>
+          <Property Name="id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="bolus_id" Type="Int32" Nullable="false" />
+          <Property Name="animal_id" Type="Int32" />
+          <Property Name="user_id" Type="String" MaxLength="128" FixedLength="false" Unicode="true" />
+          <Property Name="time_stamp" Type="DateTime" Precision="7" />
+          <Property Name="comment" Type="String" MaxLength="300" FixedLength="false" Unicode="true" />
+          <Property Name="status_read" Type="Boolean" Nullable="false" />
+        </EntityType>
+        <ComplexType Name="MOB_GET_AnimalListByUserID_Result">
+          <Property Type="Int32" Name="bolus_id" Nullable="false" />
+          <Property Type="Int32" Name="animal_id" Nullable="true" />
+        </ComplexType>
+        <ComplexType Name="MOB_GetFarmCowsInfo_Result">
+          <Property Type="Int32" Name="lactnum" Nullable="true" />
+          <Property Type="String" Name="lactname" Nullable="true" MaxLength="10" />
+        </ComplexType>
+        <ComplexType Name="MOB_AlertEventsByDateUserID_Result">
+          <Property Type="String" Name="event" Nullable="true" MaxLength="10" />
+          <Property Type="Int32" Name="number" Nullable="true" />
+        </ComplexType>
+        <ComplexType Name="MOB_Farm_TodayEventsList_Result">
+          <Property Type="Int32" Name="id" Nullable="false" />
+          <Property Type="Int32" Name="bolus_id" Nullable="false" />
+          <Property Type="Int32" Name="animal_id" Nullable="true" />
+          <Property Type="String" Name="event" Nullable="true" MaxLength="10" />
+          <Property Type="String" Name="message" Nullable="true" MaxLength="500" />
+          <Property Type="DateTime" Name="date_emailsent" Nullable="true" />
+          <Property Type="Boolean" Name="read" Nullable="true" />
+        </ComplexType>
+        <EntityType Name="Z_AlertLogs">
+          <Key>
+            <PropertyRef Name="id" />
+          </Key>
+          <Property Name="id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="bolus_id" Type="Int32" Nullable="false" />
+          <Property Name="event" Type="String" MaxLength="10" FixedLength="false" Unicode="false" />
+          <Property Name="message" Type="String" MaxLength="500" FixedLength="false" Unicode="false" />
+          <Property Name="date_emailsent" Type="DateTime" Precision="7" />
+          <Property Name="email" Type="String" MaxLength="100" FixedLength="false" Unicode="false" />
+          <Property Name="read" Type="Boolean" />
+        </EntityType>
+        <ComplexType Name="MOB_Get_AlertDetailsById_Result">
+          <Property Type="Int32" Name="id" Nullable="false" />
+          <Property Type="Int32" Name="bolus_id" Nullable="false" />
+          <Property Type="Int32" Name="animal_id" Nullable="true" />
+          <Property Type="String" Name="message" Nullable="true" MaxLength="500" />
+          <Property Type="String" Name="date_emailsent" Nullable="true" MaxLength="30" />
+          <Property Type="Boolean" Name="read" Nullable="true" />
+          <Property Type="String" Name="day_in_milk" Nullable="true" MaxLength="11" />
+          <Property Type="String" Name="lactation_stage" Nullable="true" MaxLength="11" />
+          <Property Type="String" Name="current_lactation" Nullable="false" MaxLength="10" />
+        </ComplexType>
+        <ComplexType Name="MOB_Get_AlertListByUserID_Result">
+          <Property Type="Int32" Name="id" Nullable="false" />
+          <Property Type="Int32" Name="bolus_id" Nullable="false" />
+          <Property Type="Int32" Name="animal_id" Nullable="true" />
+          <Property Type="String" Name="date_emailsent" Nullable="true" MaxLength="4000" />
+          <Property Type="String" Name="event" Nullable="true" MaxLength="10" />
+          <Property Type="String" Name="message" Nullable="true" MaxLength="500" />
+          <Property Type="Boolean" Name="read" Nullable="false" />
+        </ComplexType>
+        <EntityType Name="Bolu">
+          <Key>
+            <PropertyRef Name="id" />
+          </Key>
+          <Property Name="id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="bolus_id" Type="Int32" Nullable="false" />
+          <Property Name="animal_id" Type="Int32" />
+          <Property Name="AnimalInfo" Type="String" MaxLength="500" FixedLength="false" Unicode="true" />
+          <Property Name="Age_Lactation" Type="Int32" />
+          <Property Name="Current_Stage_Of_Lactation" Type="String" MaxLength="10" FixedLength="false" Unicode="true" />
+          <Property Name="Health_Concerns_Illness_History" Type="String" MaxLength="500" FixedLength="false" Unicode="true" />
+          <Property Name="Overall_Health" Type="String" MaxLength="10" FixedLength="false" Unicode="true" />
+          <Property Name="Comments" Type="String" MaxLength="500" FixedLength="false" Unicode="true" />
+          <Property Name="Date_of_Birth" Type="DateTime" Precision="3" />
+          <Property Name="Calving_Due_Date" Type="DateTime" Precision="3" />
+          <Property Name="Actual_Calving_Date" Type="DateTime" Precision="3" />
+          <Property Name="status" Type="Boolean" Nullable="false" />
+        </EntityType>
+        <ComplexType Name="MOB_GetCowDetails_Result">
+          <Property Type="Int32" Name="bolus_id" Nullable="false" />
+          <Property Type="Int32" Name="animal_id" Nullable="true" />
+          <Property Type="String" Name="name" Nullable="true" MaxLength="15" />
+          <Property Type="String" Name="lastdate" Nullable="true" MaxLength="30" />
+          <Property Type="String" Name="current_stage_of_lactation" Nullable="true" MaxLength="10" />
+          <Property Type="Boolean" Name="has_unread_alerts" Nullable="true" />
+          <Property Type="String" Name="lactation_day" Nullable="true" MaxLength="14" />
+        </ComplexType>
+        <EntityType Name="MOB_EventFeedback">
+          <Key>
+            <PropertyRef Name="id" />
+          </Key>
+          <Property Name="id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="event_id" Type="Int32" Nullable="false" />
+          <Property Name="visual_symptoms" Type="Boolean" Nullable="false" />
+          <Property Name="rectal_temperature" Type="Double" />
+          <Property Name="rectal_temperature_measuring_time" Type="DateTime" Precision="7" />
+          <Property Name="treatment_note" Type="String" MaxLength="300" FixedLength="false" Unicode="true" />
+          <Property Name="general_note" Type="String" MaxLength="300" FixedLength="false" Unicode="true" />
+        </EntityType>
+        <EntityType Name="Mob_Events">
+          <Key>
+            <PropertyRef Name="id" />
+          </Key>
+          <Property Name="id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="bolus_id" Type="Int32" Nullable="false" />
+          <Property Name="diagnosis" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
+          <Property Name="comment" Type="String" MaxLength="300" FixedLength="false" Unicode="true" />
+          <Property Name="selected_date" Type="DateTime" Precision="7" />
+        </EntityType>
+      </Schema>
+    </edmx:ConceptualModels>
+    <!-- C-S mapping content -->
+    <edmx:Mappings>
+      <Mapping Space="C-S" xmlns="http://schemas.microsoft.com/ado/2009/11/mapping/cs">
+        <EntityContainerMapping StorageEntityContainer="DB_A4A060_csModelStoreContainer" CdmEntityContainer="DB_A4A060_csEntities">
+          <EntitySetMapping Name="Mob_Token">
+            <EntityTypeMapping TypeName="DB_A4A060_csModel.Mob_Token">
+              <MappingFragment StoreEntitySet="Mob_Token">
+                <ScalarProperty Name="id" ColumnName="id" />
+                <ScalarProperty Name="username" ColumnName="username" />
+                <ScalarProperty Name="hashcode" ColumnName="hashcode" />
+                <ScalarProperty Name="datetime_exp" ColumnName="datetime_exp" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Mob_Users">
+            <EntityTypeMapping TypeName="DB_A4A060_csModel.Mob_Users">
+              <MappingFragment StoreEntitySet="Mob_Users">
+                <ScalarProperty Name="AspNetUser_ID" ColumnName="AspNetUser_ID" />
+                <ScalarProperty Name="passwordMD5" ColumnName="passwordMD5" />
+                <ScalarProperty Name="email" ColumnName="email" />
+                <ScalarProperty Name="id" ColumnName="id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <FunctionImportMapping FunctionImportName="MOB_Farm_TodayEventsList" FunctionName="DB_A4A060_csModel.Store.MOB_Farm_TodayEventsList">
+            <ResultMapping>
+              <ComplexTypeMapping TypeName="DB_A4A060_csModel.MOB_Farm_TodayEventsList_Result">
+                <ScalarProperty Name="id" ColumnName="id" />
+                <ScalarProperty Name="bolus_id" ColumnName="bolus_id" />
+                <ScalarProperty Name="animal_id" ColumnName="animal_id" />
+                <ScalarProperty Name="event" ColumnName="event" />
+                <ScalarProperty Name="message" ColumnName="message" />
+                <ScalarProperty Name="date_emailsent" ColumnName="date_emailsent" />
+                <ScalarProperty Name="read" ColumnName="read" />
+              </ComplexTypeMapping>
+            </ResultMapping>
+          </FunctionImportMapping>
+          <FunctionImportMapping FunctionImportName="DataGapsFarm" FunctionName="DB_A4A060_csModel.Store.DataGapsFarm">
+            <ResultMapping>
+              <ComplexTypeMapping TypeName="DB_A4A060_csModel.DataGapsFarm_Result">
+                <ScalarProperty Name="r" ColumnName="r" />
+                <ScalarProperty Name="Gaps" ColumnName="Gaps" />
+                <ScalarProperty Name="DateCtrl" ColumnName="DateCtrl" />
+              </ComplexTypeMapping>
+            </ResultMapping>
+          </FunctionImportMapping>
+          <FunctionImportMapping FunctionImportName="SP_GET_FarmLostCows" FunctionName="DB_A4A060_csModel.Store.SP_GET_FarmLostCows">
+            <ResultMapping>
+              <ComplexTypeMapping TypeName="DB_A4A060_csModel.SP_GET_FarmLostCows_Result">
+                <ScalarProperty Name="bolus_id" ColumnName="bolus_id" />
+                <ScalarProperty Name="animal_id" ColumnName="animal_id" />
+                <ScalarProperty Name="lastdate" ColumnName="lastdate" />
+                <ScalarProperty Name="Current_Stage_Of_Lactation" ColumnName="Current_Stage_Of_Lactation" />
+              </ComplexTypeMapping>
+            </ResultMapping>
+          </FunctionImportMapping>
+          <FunctionImportMapping FunctionImportName="SP_GET_Farm_TotalAlertsPeriod" FunctionName="DB_A4A060_csModel.Store.SP_GET_Farm_TotalAlertsPeriod" />
+          <EntitySetMapping Name="Farms">
+            <EntityTypeMapping TypeName="DB_A4A060_csModel.Farm">
+              <MappingFragment StoreEntitySet="Farms">
+                <ScalarProperty Name="EmailStatus" ColumnName="EmailStatus" />
+                <ScalarProperty Name="PhoneStatus" ColumnName="PhoneStatus" />
+                <ScalarProperty Name="Emails" ColumnName="Emails" />
+                <ScalarProperty Name="Phones" ColumnName="Phones" />
+                <ScalarProperty Name="AspNetUser_Id" ColumnName="AspNetUser_Id" />
+                <ScalarProperty Name="GeoPosition" ColumnName="GeoPosition" />
+                <ScalarProperty Name="Owner" ColumnName="Owner" />
+                <ScalarProperty Name="Name" ColumnName="Name" />
+                <ScalarProperty Name="id" ColumnName="id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <FunctionImportMapping FunctionImportName="ChartsXY_temp" FunctionName="DB_A4A060_csModel.Store.ChartsXY_temp">
+            <ResultMapping>
+              <ComplexTypeMapping TypeName="DB_A4A060_csModel.ChartsXY_temp_Result">
+                <ScalarProperty Name="t" ColumnName="t" />
+                <ScalarProperty Name="Temperature" ColumnName="Temperature" />
+              </ComplexTypeMapping>
+            </ResultMapping>
+          </FunctionImportMapping>
+          <FunctionImportMapping FunctionImportName="WaterIntakes_sig" FunctionName="DB_A4A060_csModel.Store.WaterIntakes_sig">
+            <ResultMapping>
+              <ComplexTypeMapping TypeName="DB_A4A060_csModel.WaterIntakes_sig_Result">
+                <ScalarProperty Name="id" ColumnName="id" />
+                <ScalarProperty Name="bolus_full_date" ColumnName="bolus_full_date" />
+                <ScalarProperty Name="intakes" ColumnName="intakes" />
+              </ComplexTypeMapping>
+            </ResultMapping>
+          </FunctionImportMapping>
+          <EntitySetMapping Name="MeasDatas">
+            <EntityTypeMapping TypeName="DB_A4A060_csModel.MeasData">
+              <MappingFragment StoreEntitySet="MeasData">
+                <ScalarProperty Name="raw" ColumnName="raw" />
+                <ScalarProperty Name="is_average" ColumnName="is_average" />
+                <ScalarProperty Name="base_station_id" ColumnName="base_station_id" />
+                <ScalarProperty Name="bolus_full_date" ColumnName="bolus_full_date" />
+                <ScalarProperty Name="bolus_timestamp" ColumnName="bolus_timestamp" />
+                <ScalarProperty Name="temperature" ColumnName="temperature" />
+                <ScalarProperty Name="animal_id" ColumnName="animal_id" />
+                <ScalarProperty Name="bolus_id" ColumnName="bolus_id" />
+                <ScalarProperty Name="user_id" ColumnName="user_id" />
+                <ScalarProperty Name="id" ColumnName="id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="FermerComments">
+            <EntityTypeMapping TypeName="DB_A4A060_csModel.FermerComment">
+              <MappingFragment StoreEntitySet="FermerComments">
+                <ScalarProperty Name="status_read" ColumnName="status_read" />
+                <ScalarProperty Name="comment" ColumnName="comment" />
+                <ScalarProperty Name="time_stamp" ColumnName="time_stamp" />
+                <ScalarProperty Name="user_id" ColumnName="user_id" />
+                <ScalarProperty Name="animal_id" ColumnName="animal_id" />
+                <ScalarProperty Name="bolus_id" ColumnName="bolus_id" />
+                <ScalarProperty Name="id" ColumnName="id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <FunctionImportMapping FunctionImportName="MOB_GET_AnimalListByUserID" FunctionName="DB_A4A060_csModel.Store.MOB_GET_AnimalListByUserID">
+            <ResultMapping>
+              <ComplexTypeMapping TypeName="DB_A4A060_csModel.MOB_GET_AnimalListByUserID_Result">
+                <ScalarProperty Name="bolus_id" ColumnName="bolus_id" />
+                <ScalarProperty Name="animal_id" ColumnName="animal_id" />
+              </ComplexTypeMapping>
+            </ResultMapping>
+          </FunctionImportMapping>
+          <FunctionImportMapping FunctionImportName="MOB_GetFarmCowsInfo" FunctionName="DB_A4A060_csModel.Store.MOB_GetFarmCowsInfo" >
+            <ResultMapping>
+              <ComplexTypeMapping TypeName="DB_A4A060_csModel.MOB_GetFarmCowsInfo_Result">
+                <ScalarProperty Name="lactnum" ColumnName="lactnum" />
+                <ScalarProperty Name="lactname" ColumnName="lactname" />
+              </ComplexTypeMapping>
+            </ResultMapping>
+          </FunctionImportMapping>
+          <FunctionImportMapping FunctionImportName="MOB_AlertEventsByDateUserID" FunctionName="DB_A4A060_csModel.Store.MOB_AlertEventsByDateUserID">
+            <ResultMapping>
+              <ComplexTypeMapping TypeName="DB_A4A060_csModel.MOB_AlertEventsByDateUserID_Result">
+                <ScalarProperty Name="event" ColumnName="event" />
+                <ScalarProperty Name="number" ColumnName="number" />
+              </ComplexTypeMapping>
+            </ResultMapping>
+          </FunctionImportMapping>
+          <EntitySetMapping Name="Z_AlertLogs">
+            <EntityTypeMapping TypeName="DB_A4A060_csModel.Z_AlertLogs">
+              <MappingFragment StoreEntitySet="Z_AlertLogs">
+                <ScalarProperty Name="read" ColumnName="read" />
+                <ScalarProperty Name="email" ColumnName="email" />
+                <ScalarProperty Name="date_emailsent" ColumnName="date_emailsent" />
+                <ScalarProperty Name="message" ColumnName="message" />
+                <ScalarProperty Name="event" ColumnName="event" />
+                <ScalarProperty Name="bolus_id" ColumnName="bolus_id" />
+                <ScalarProperty Name="id" ColumnName="id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <FunctionImportMapping FunctionImportName="MOB_Get_AlertDetailsById" FunctionName="DB_A4A060_csModel.Store.MOB_Get_AlertDetailsById">
+            <ResultMapping>
+              <ComplexTypeMapping TypeName="DB_A4A060_csModel.MOB_Get_AlertDetailsById_Result">
+                <ScalarProperty Name="id" ColumnName="id" />
+                <ScalarProperty Name="bolus_id" ColumnName="bolus_id" />
+                <ScalarProperty Name="animal_id" ColumnName="animal_id" />
+                <ScalarProperty Name="message" ColumnName="message" />
+                <ScalarProperty Name="date_emailsent" ColumnName="date_emailsent" />
+                <ScalarProperty Name="read" ColumnName="read" />
+                <ScalarProperty Name="day_in_milk" ColumnName="day_in_milk" />
+                <ScalarProperty Name="lactation_stage" ColumnName="lactation_stage" />
+                <ScalarProperty Name="current_lactation" ColumnName="current_lactation" />
+              </ComplexTypeMapping>
+            </ResultMapping>
+          </FunctionImportMapping>
+          <FunctionImportMapping FunctionImportName="MOB_Get_AlertListByUserID" FunctionName="DB_A4A060_csModel.Store.MOB_Get_AlertListByUserID">
+            <ResultMapping>
+              <ComplexTypeMapping TypeName="DB_A4A060_csModel.MOB_Get_AlertListByUserID_Result">
+                <ScalarProperty Name="id" ColumnName="id" />
+                <ScalarProperty Name="bolus_id" ColumnName="bolus_id" />
+                <ScalarProperty Name="animal_id" ColumnName="animal_id" />
+                <ScalarProperty Name="date_emailsent" ColumnName="date_emailsent" />
+                <ScalarProperty Name="event" ColumnName="event" />
+                <ScalarProperty Name="message" ColumnName="message" />
+                <ScalarProperty Name="read" ColumnName="read" />
+              </ComplexTypeMapping>
+            </ResultMapping>
+          </FunctionImportMapping>
+          <EntitySetMapping Name="Bolus">
+            <EntityTypeMapping TypeName="DB_A4A060_csModel.Bolu">
+              <MappingFragment StoreEntitySet="Bolus">
+                <ScalarProperty Name="status" ColumnName="status" />
+                <ScalarProperty Name="Actual_Calving_Date" ColumnName="Actual_Calving_Date" />
+                <ScalarProperty Name="Calving_Due_Date" ColumnName="Calving_Due_Date" />
+                <ScalarProperty Name="Date_of_Birth" ColumnName="Date_of_Birth" />
+                <ScalarProperty Name="Comments" ColumnName="Comments" />
+                <ScalarProperty Name="Overall_Health" ColumnName="Overall_Health" />
+                <ScalarProperty Name="Health_Concerns_Illness_History" ColumnName="Health_Concerns_Illness_History" />
+                <ScalarProperty Name="Current_Stage_Of_Lactation" ColumnName="Current_Stage_Of_Lactation" />
+                <ScalarProperty Name="Age_Lactation" ColumnName="Age_Lactation" />
+                <ScalarProperty Name="AnimalInfo" ColumnName="AnimalInfo" />
+                <ScalarProperty Name="animal_id" ColumnName="animal_id" />
+                <ScalarProperty Name="bolus_id" ColumnName="bolus_id" />
+                <ScalarProperty Name="id" ColumnName="id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <FunctionImportMapping FunctionImportName="MOB_GetCowDetails" FunctionName="DB_A4A060_csModel.Store.MOB_GetCowDetails">
+            <ResultMapping>
+              <ComplexTypeMapping TypeName="DB_A4A060_csModel.MOB_GetCowDetails_Result">
+                <ScalarProperty Name="bolus_id" ColumnName="bolus_id" />
+                <ScalarProperty Name="animal_id" ColumnName="animal_id" />
+                <ScalarProperty Name="name" ColumnName="name" />
+                <ScalarProperty Name="lastdate" ColumnName="lastdate" />
+                <ScalarProperty Name="current_stage_of_lactation" ColumnName="current_stage_of_lactation" />
+                <ScalarProperty Name="has_unread_alerts" ColumnName="has_unread_alerts" />
+                <ScalarProperty Name="lactation_day" ColumnName="lactation_day" />
+              </ComplexTypeMapping>
+            </ResultMapping>
+          </FunctionImportMapping>
+          <EntitySetMapping Name="MOB_EventFeedback">
+            <EntityTypeMapping TypeName="DB_A4A060_csModel.MOB_EventFeedback">
+              <MappingFragment StoreEntitySet="MOB_EventFeedback">
+                <ScalarProperty Name="general_note" ColumnName="general_note" />
+                <ScalarProperty Name="treatment_note" ColumnName="treatment_note" />
+                <ScalarProperty Name="rectal_temperature_measuring_time" ColumnName="rectal_temperature_measuring_time" />
+                <ScalarProperty Name="rectal_temperature" ColumnName="rectal_temperature" />
+                <ScalarProperty Name="visual_symptoms" ColumnName="visual_symptoms" />
+                <ScalarProperty Name="event_id" ColumnName="event_id" />
+                <ScalarProperty Name="id" ColumnName="id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Mob_Events">
+            <EntityTypeMapping TypeName="DB_A4A060_csModel.Mob_Events">
+              <MappingFragment StoreEntitySet="Mob_Events">
+                <ScalarProperty Name="selected_date" ColumnName="selected_date" />
+                <ScalarProperty Name="comment" ColumnName="comment" />
+                <ScalarProperty Name="diagnosis" ColumnName="diagnosis" />
+                <ScalarProperty Name="bolus_id" ColumnName="bolus_id" />
+                <ScalarProperty Name="id" ColumnName="id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+        </EntityContainerMapping>
+      </Mapping>
+    </edmx:Mappings>
+  </edmx:Runtime>
+  <!-- EF Designer content (DO NOT EDIT MANUALLY BELOW HERE) -->
+  <Designer xmlns="http://schemas.microsoft.com/ado/2009/11/edmx">
+    <Connection>
+      <DesignerInfoPropertySet>
+        <DesignerProperty Name="MetadataArtifactProcessing" Value="EmbedInOutputAssembly" />
+      </DesignerInfoPropertySet>
+    </Connection>
+    <Options>
+      <DesignerInfoPropertySet>
+        <DesignerProperty Name="ValidateOnBuild" Value="true" />
+        <DesignerProperty Name="EnablePluralization" Value="true" />
+        <DesignerProperty Name="IncludeForeignKeysInModel" Value="true" />
+        <DesignerProperty Name="UseLegacyProvider" Value="false" />
+        <DesignerProperty Name="CodeGenerationStrategy" Value="None" />
+      </DesignerInfoPropertySet>
+    </Options>
+    <!-- Diagram content (shape and connector positions) -->
+    <Diagrams></Diagrams>
+  </Designer>
+</edmx:Edmx>
