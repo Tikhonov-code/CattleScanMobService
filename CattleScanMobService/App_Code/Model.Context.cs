@@ -34,6 +34,8 @@ public partial class DB_A4A060_csEntities : DbContext
     public virtual DbSet<Bolu> Bolus { get; set; }
     public virtual DbSet<MOB_EventFeedback> MOB_EventFeedback { get; set; }
     public virtual DbSet<Mob_Events> Mob_Events { get; set; }
+    public virtual DbSet<Mob_Feedback> Mob_Feedback { get; set; }
+    public virtual DbSet<Mob_DeviceToken> Mob_DeviceToken { get; set; }
 
     public virtual ObjectResult<MOB_Farm_TodayEventsList_Result> MOB_Farm_TodayEventsList(string user_id, Nullable<System.DateTime> dt, string @event)
     {
@@ -213,5 +215,26 @@ public partial class DB_A4A060_csEntities : DbContext
             new ObjectParameter("bolus_id", typeof(int));
 
         return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<MOB_GetCowDetails_Result>("MOB_GetCowDetails", bolus_idParameter);
+    }
+
+    public virtual ObjectResult<Nullable<double>> WaterIntakes_Sum(Nullable<System.DateTime> dt1, Nullable<System.DateTime> dt2, Nullable<int> bolus_id, Nullable<double> wi_calbr)
+    {
+        var dt1Parameter = dt1.HasValue ?
+            new ObjectParameter("dt1", dt1) :
+            new ObjectParameter("dt1", typeof(System.DateTime));
+
+        var dt2Parameter = dt2.HasValue ?
+            new ObjectParameter("dt2", dt2) :
+            new ObjectParameter("dt2", typeof(System.DateTime));
+
+        var bolus_idParameter = bolus_id.HasValue ?
+            new ObjectParameter("bolus_id", bolus_id) :
+            new ObjectParameter("bolus_id", typeof(int));
+
+        var wi_calbrParameter = wi_calbr.HasValue ?
+            new ObjectParameter("wi_calbr", wi_calbr) :
+            new ObjectParameter("wi_calbr", typeof(double));
+
+        return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<Nullable<double>>("WaterIntakes_Sum", dt1Parameter, dt2Parameter, bolus_idParameter, wi_calbrParameter);
     }
 }

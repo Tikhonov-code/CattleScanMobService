@@ -65,6 +65,13 @@ public partial class MeasData
     public string raw { get; set; }
 }
 
+public partial class Mob_DeviceToken
+{
+    public int id { get; set; }
+    public string AspNetUser_ID { get; set; }
+    public string device_token { get; set; }
+}
+
 public partial class MOB_EventFeedback
 {
     public int id { get; set; }
@@ -74,15 +81,38 @@ public partial class MOB_EventFeedback
     public Nullable<System.DateTime> rectal_temperature_measuring_time { get; set; }
     public string treatment_note { get; set; }
     public string general_note { get; set; }
+
+    public virtual Mob_Events Mob_Events { get; set; }
 }
 
 public partial class Mob_Events
 {
+    [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
+    public Mob_Events()
+    {
+        this.MOB_EventFeedback = new HashSet<MOB_EventFeedback>();
+    }
+
     public int id { get; set; }
     public int bolus_id { get; set; }
     public string diagnosis { get; set; }
     public string comment { get; set; }
     public Nullable<System.DateTime> selected_date { get; set; }
+
+    [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+    public virtual ICollection<MOB_EventFeedback> MOB_EventFeedback { get; set; }
+}
+
+public partial class Mob_Feedback
+{
+    public int id { get; set; }
+    public int alert_id { get; set; }
+    public bool visual_symptoms { get; set; }
+    public Nullable<double> rectal_temperature { get; set; }
+    public Nullable<System.DateTime> rectal_temperature_measuring_time { get; set; }
+    public string diagnosis { get; set; }
+    public string treatment_note { get; set; }
+    public string general_note { get; set; }
 }
 
 public partial class Mob_Token
@@ -110,6 +140,7 @@ public partial class Z_AlertLogs
     public Nullable<System.DateTime> date_emailsent { get; set; }
     public string email { get; set; }
     public Nullable<bool> read { get; set; }
+    public Nullable<bool> feedback { get; set; }
 }
 
 public partial class ChartsXY_temp_Result

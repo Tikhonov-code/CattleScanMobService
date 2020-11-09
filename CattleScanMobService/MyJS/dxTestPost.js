@@ -5,6 +5,9 @@ $(function () {
     $("#token").dxTextBox({
         value: "null"
     });
+    $("#device_token").dxTextBox({
+        value: "cUyUH-"
+    });
     $("#FarmStat").dxTextBox({
         value: ""
     });
@@ -23,6 +26,10 @@ $(function () {
             switch (e.itemData.query) {
                 case "mob_0":
                     PostFarmStat("mobil@mob.mo", "09ebc5cb5447dd77465cf1001634943a", null, "mob_0");
+                    //PostFarmStat("willembloemen@gmail.com", "5642ec030437f933af3989d2db87d1ef", null, "mob_0");
+                   // PostFarmStat("jordan@stonecreekfarms.com", "b742faa6dc057775d5e6b18828513bd6", null, "mob_0");
+                    //PostFarmStat("c@c.c", "5993d70589c68b1dcc5e03013c17a46e", null, "mob_0");
+                    //PostFarmStat("wlstrenzke@gmail.com", "1f2e76ad94b1a720479c51b0f1cd861c", null, "mob_0");
                     break;
                 case "mob_11":
                     //(email, password, token, action)
@@ -205,7 +212,7 @@ $(function () {
                     data.page = 1;
                     data.animal_id = 112;
                     data.token = $("#token").dxTextBox("instance").option('value');
-                    break; 
+                    break;
             }
             DataPostWithParameters("alert_list", data);
         }
@@ -228,7 +235,7 @@ $(function () {
                     var data = {};
                     data.token = $("#token").dxTextBox("instance").option('value');
                     data.bolus_id = 11;
-                    data.age_lactation = 26;
+                    data.age_lactation = 24;
                     data.current_stage_of_lactation = 'dry';
                     data.comments = 'new comment 777777777';
                     data.calving_due_date = '2020-11-17';
@@ -237,7 +244,7 @@ $(function () {
 
                     DataPostWithParameters("cow_details_update", data);
                     break;
-            } 
+            }
         }
     });
     //-----------------------------------------------------
@@ -255,7 +262,7 @@ $(function () {
                     data.diagnosis = "Retain Placenta";
                     data.comment = "new comment 3333";
                     data.selected_date = "2020-10-19 12:15";
-                    break; 
+                    break;
                 case "update_event":
                     var data = {};
                     data.token = $("#token").dxTextBox("instance").option('value');
@@ -287,13 +294,14 @@ $(function () {
         selectedItemKeys: ["left"],
         onItemClick: function (e) {
             switch (e.itemData.query) {
-                case "create_feedback":
+                case "add_feedback":
                     var data = {};
                     data.token = $("#token").dxTextBox("instance").option('value');
-                    data.event_id = 4;
+                    data.alert_id = 4;
                     data.visual_symptoms = 1;
                     data.rectal_temperature = 40;
                     data.rectal_temperature_measuring_time = "2020-10-19 12:15";
+                    data.diagnosis = ["Mastitis", "Metrisis", "LDA"];
                     data.treatment_note = "treatment_note";
                     data.general_note = "general_note";
 
@@ -301,22 +309,42 @@ $(function () {
                 case "update_feedback":
                     var data = {};
                     data.token = $("#token").dxTextBox("instance").option('value');
-                    data.id = 5;
-                    data.visual_symptoms = 0;
-                    data.rectal_temperature = 42;
-                    data.rectal_temperature_measuring_time = "2020-10-19 17:15";
-                    data.treatment_note = "treatment_note new=====";
-                    data.general_note = "general_note new=====";
+                    data.id = 7;
+                    data.visual_symptoms = 1;
+                    data.rectal_temperature = 55;
+                    data.rectal_temperature_measuring_time = "2020-10-30 17:15";
+                    data.diagnosis = ["Mastitis", "LDA"];
+                    data.treatment_note = "treatment_note 0000";
+                    data.general_note = "general_note 0000";
                     break;
                 case "delete_feedback":
                     var data = {};
                     data.token = $("#token").dxTextBox("instance").option('value');
-                    data.id = 4;
+                    data.id = 5;
                     break;
                 case "list_feedback":
                     var data = {};
                     data.token = $("#token").dxTextBox("instance").option('value');
-                    data.event_id =4;
+                    data.event_id = 4;
+                    break;
+                case "status_alert":
+                    var data = {};
+                    data.token = $("#token").dxTextBox("instance").option('value');
+                    data.alert_id = 9762;
+                    data.read = null;
+                    data.feedback = 1;
+                    break;
+                case "save_device_token":
+                    var data = {};
+                    data.token = $("#token").dxTextBox("instance").option('value');
+                    data.device_token = $("#device_token").dxTextBox("instance").option('value');
+                    break;
+                case "get_intakes":
+                    data = {};
+                    data.token = $("#token").dxTextBox("instance").option('value');
+                    data.bolus_id = 113;
+                    data.dt1 = '2020-11-04';
+                    data.dt2 = '2020-11-05';
                     break;
             }
             DataPostWithParameters(e.itemData.query, data);
@@ -515,8 +543,8 @@ var buttonList9 = [
     },
     {
         icon: "comment",
-        query: "create_feedback",
-        text: "Create feedback"
+        query: "add_feedback",
+        text: "Add feedback"
     },
     {
         icon: "comment",
@@ -527,9 +555,23 @@ var buttonList9 = [
         icon: "comment",
         query: "delete_feedback",
         text: "Delete Feedback"
+    },
+    {
+        icon: "comment",
+        query: "status_alert",
+        text: "Set status of alert"
+    }, 
+    {
+        icon: "tel",
+        query: "save_device_token",
+        text: "Save device token"
+    },
+    {
+        icon: "tel",
+        query: "get_intakes",
+        text: "Get intakes Sum"
     }
 ];
-
 //---------------------------------------
 
 //Login , request token----------------------------------------
@@ -603,6 +645,11 @@ function DataPostWithParameters(action, data) {
 
     var dd = JSON.stringify(data);
     var x = $.post(url, dd).done(function (data) {
+        //Object { status: "error", message: "get_intakes: dt2 is null" }
+        if (data.status =="error") {
+            $("#FarmStat").html(data.message);
+            return;
+        }
         switch (action) {
             case "alert_list":
             case "alert_list1":
@@ -618,6 +665,7 @@ function DataPostWithParameters(action, data) {
             case "SaveFermerComment":
             case "DeleteFermerComment":
             case "UpdateFermerComment":
+
                 $("#FarmStat").html(data.data);
                 break;
             case "alert_details":
@@ -626,9 +674,12 @@ function DataPostWithParameters(action, data) {
             case "create_event":
             case "update_event":
             case "delete_event":
-            case "create_feedback":
+            case "add_feedback":
             case "update_feedback":
             case "delete_feedback":
+            case "status_alert":
+            case "save_device_token":
+            case "get_intakes":
                 $("#FarmStat").html(JSON.stringify(data.data));
                 break;
             default:
@@ -642,14 +693,7 @@ function DataPostWithParameters(action, data) {
 
 // POST static webmethod
 function RequestDataPostParams(action, data) {
-
     //----------------------------------------------------
-    //var mes = $("#param").dxTextBox('instance').option('value');
-    //var data = {};
-    //data.dt = '2020-08-30';
-    //data.user_id = '20595462-e9cd-40a7-81e9-08fc7fdbaa4c';
-    //data.days = 30;
-    //data.eventpar = 'Q40.5';
     var jsonText = JSON.stringify(data);
 
     $.ajax({

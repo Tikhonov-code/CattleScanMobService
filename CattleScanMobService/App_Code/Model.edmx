@@ -64,6 +64,14 @@
           <Property Name="is_average" Type="bit" Nullable="false" />
           <Property Name="raw" Type="varchar" MaxLength="64" />
         </EntityType>
+        <EntityType Name="Mob_DeviceToken">
+          <Key>
+            <PropertyRef Name="id" />
+          </Key>
+          <Property Name="id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="AspNetUser_ID" Type="nvarchar" MaxLength="128" />
+          <Property Name="device_token" Type="nvarchar" MaxLength="164" Nullable="false" />
+        </EntityType>
         <EntityType Name="MOB_EventFeedback">
           <Key>
             <PropertyRef Name="id" />
@@ -85,6 +93,19 @@
           <Property Name="diagnosis" Type="nvarchar" MaxLength="100" />
           <Property Name="comment" Type="nvarchar" MaxLength="300" />
           <Property Name="selected_date" Type="datetime2" Precision="7" />
+        </EntityType>
+        <EntityType Name="Mob_Feedback">
+          <Key>
+            <PropertyRef Name="id" />
+          </Key>
+          <Property Name="id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="alert_id" Type="int" Nullable="false" />
+          <Property Name="visual_symptoms" Type="bit" Nullable="false" />
+          <Property Name="rectal_temperature" Type="float" />
+          <Property Name="rectal_temperature_measuring_time" Type="datetime2" Precision="7" />
+          <Property Name="diagnosis" Type="nvarchar" MaxLength="300" />
+          <Property Name="treatment_note" Type="nvarchar" MaxLength="300" />
+          <Property Name="general_note" Type="nchar" MaxLength="300" />
         </EntityType>
         <EntityType Name="Mob_Token">
           <Key>
@@ -115,7 +136,22 @@
           <Property Name="date_emailsent" Type="datetime2" Precision="7" />
           <Property Name="email" Type="varchar" MaxLength="100" />
           <Property Name="read" Type="bit" />
+          <Property Name="feedback" Type="bit" />
         </EntityType>
+        <Association Name="FK_MOB_EventFeedback_Mob_Events">
+          <End Role="Mob_Events" Type="Self.Mob_Events" Multiplicity="1">
+            <OnDelete Action="Cascade" />
+          </End>
+          <End Role="MOB_EventFeedback" Type="Self.MOB_EventFeedback" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Mob_Events">
+              <PropertyRef Name="id" />
+            </Principal>
+            <Dependent Role="MOB_EventFeedback">
+              <PropertyRef Name="event_id" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
         <Function Name="ChartsXY_temp" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
           <Parameter Name="dt1" Type="datetime2" Mode="In" />
           <Parameter Name="dt2" Type="datetime2" Mode="In" />
@@ -172,16 +208,28 @@
           <Parameter Name="bolus_id" Type="int" Mode="In" />
           <Parameter Name="wi_calbr" Type="float" Mode="In" />
         </Function>
+        <Function Name="WaterIntakes_Sum" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+          <Parameter Name="dt1" Type="datetime2" Mode="In" />
+          <Parameter Name="dt2" Type="datetime2" Mode="In" />
+          <Parameter Name="bolus_id" Type="int" Mode="In" />
+          <Parameter Name="wi_calbr" Type="float" Mode="In" />
+        </Function>
         <EntityContainer Name="DB_A4A060_csModelStoreContainer">
           <EntitySet Name="Bolus" EntityType="Self.Bolus" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Farms" EntityType="Self.Farms" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="FermerComments" EntityType="Self.FermerComments" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="MeasData" EntityType="Self.MeasData" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Mob_DeviceToken" EntityType="Self.Mob_DeviceToken" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="MOB_EventFeedback" EntityType="Self.MOB_EventFeedback" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Mob_Events" EntityType="Self.Mob_Events" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Mob_Feedback" EntityType="Self.Mob_Feedback" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Mob_Token" EntityType="Self.Mob_Token" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Mob_Users" EntityType="Self.Mob_Users" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Z_AlertLogs" EntityType="Self.Z_AlertLogs" Schema="dbo" store:Type="Tables" />
+          <AssociationSet Name="FK_MOB_EventFeedback_Mob_Events" Association="Self.FK_MOB_EventFeedback_Mob_Events">
+            <End Role="Mob_Events" EntitySet="Mob_Events" />
+            <End Role="MOB_EventFeedback" EntitySet="MOB_EventFeedback" />
+          </AssociationSet>
         </EntityContainer>
       </Schema></edmx:StorageModels>
     <!-- CSDL content -->
@@ -262,6 +310,18 @@
           </FunctionImport>
           <EntitySet Name="MOB_EventFeedback" EntityType="DB_A4A060_csModel.MOB_EventFeedback" />
           <EntitySet Name="Mob_Events" EntityType="DB_A4A060_csModel.Mob_Events" />
+          <EntitySet Name="Mob_Feedback" EntityType="DB_A4A060_csModel.Mob_Feedback" />
+          <AssociationSet Name="FK_MOB_EventFeedback_Mob_Events" Association="DB_A4A060_csModel.FK_MOB_EventFeedback_Mob_Events">
+            <End Role="Mob_Events" EntitySet="Mob_Events" />
+            <End Role="MOB_EventFeedback" EntitySet="MOB_EventFeedback" />
+          </AssociationSet>
+          <EntitySet Name="Mob_DeviceToken" EntityType="DB_A4A060_csModel.Mob_DeviceToken" />
+          <FunctionImport Name="WaterIntakes_Sum" ReturnType="Collection(Double)">
+            <Parameter Name="dt1" Mode="In" Type="DateTime" />
+            <Parameter Name="dt2" Mode="In" Type="DateTime" />
+            <Parameter Name="bolus_id" Mode="In" Type="Int32" />
+            <Parameter Name="wi_calbr" Mode="In" Type="Double" />
+          </FunctionImport>
         </EntityContainer>
         <EntityType Name="Mob_Users">
           <Key>
@@ -365,6 +425,7 @@
           <Property Name="date_emailsent" Type="DateTime" Precision="7" />
           <Property Name="email" Type="String" MaxLength="100" FixedLength="false" Unicode="false" />
           <Property Name="read" Type="Boolean" />
+          <Property Name="feedback" Type="Boolean" />
         </EntityType>
         <ComplexType Name="MOB_Get_AlertDetailsById_Result">
           <Property Type="Int32" Name="id" Nullable="false" />
@@ -424,6 +485,7 @@
           <Property Name="rectal_temperature_measuring_time" Type="DateTime" Precision="7" />
           <Property Name="treatment_note" Type="String" MaxLength="300" FixedLength="false" Unicode="true" />
           <Property Name="general_note" Type="String" MaxLength="300" FixedLength="false" Unicode="true" />
+          <NavigationProperty Name="Mob_Events" Relationship="DB_A4A060_csModel.FK_MOB_EventFeedback_Mob_Events" FromRole="MOB_EventFeedback" ToRole="Mob_Events" />
         </EntityType>
         <EntityType Name="Mob_Events">
           <Key>
@@ -434,6 +496,42 @@
           <Property Name="diagnosis" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
           <Property Name="comment" Type="String" MaxLength="300" FixedLength="false" Unicode="true" />
           <Property Name="selected_date" Type="DateTime" Precision="7" />
+          <NavigationProperty Name="MOB_EventFeedback" Relationship="DB_A4A060_csModel.FK_MOB_EventFeedback_Mob_Events" FromRole="Mob_Events" ToRole="MOB_EventFeedback" />
+        </EntityType>
+        <EntityType Name="Mob_Feedback">
+          <Key>
+            <PropertyRef Name="id" />
+          </Key>
+          <Property Name="id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="alert_id" Type="Int32" Nullable="false" />
+          <Property Name="visual_symptoms" Type="Boolean" Nullable="false" />
+          <Property Name="rectal_temperature" Type="Double" />
+          <Property Name="rectal_temperature_measuring_time" Type="DateTime" Precision="7" />
+          <Property Name="diagnosis" Type="String" MaxLength="300" FixedLength="false" Unicode="true" />
+          <Property Name="treatment_note" Type="String" MaxLength="300" FixedLength="false" Unicode="true" />
+          <Property Name="general_note" Type="String" MaxLength="300" FixedLength="true" Unicode="true" />
+        </EntityType>
+        <Association Name="FK_MOB_EventFeedback_Mob_Events">
+          <End Type="DB_A4A060_csModel.Mob_Events" Role="Mob_Events" Multiplicity="1">
+            <OnDelete Action="Cascade" />
+          </End>
+          <End Type="DB_A4A060_csModel.MOB_EventFeedback" Role="MOB_EventFeedback" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Mob_Events">
+              <PropertyRef Name="id" />
+            </Principal>
+            <Dependent Role="MOB_EventFeedback">
+              <PropertyRef Name="event_id" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <EntityType Name="Mob_DeviceToken">
+          <Key>
+            <PropertyRef Name="id" />
+          </Key>
+          <Property Name="id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="AspNetUser_ID" Type="String" MaxLength="128" FixedLength="false" Unicode="true" />
+          <Property Name="device_token" Type="String" Nullable="false" MaxLength="164" FixedLength="false" Unicode="true" />
         </EntityType>
       </Schema>
     </edmx:ConceptualModels>
@@ -582,6 +680,7 @@
           <EntitySetMapping Name="Z_AlertLogs">
             <EntityTypeMapping TypeName="DB_A4A060_csModel.Z_AlertLogs">
               <MappingFragment StoreEntitySet="Z_AlertLogs">
+                <ScalarProperty Name="feedback" ColumnName="feedback" />
                 <ScalarProperty Name="read" ColumnName="read" />
                 <ScalarProperty Name="email" ColumnName="email" />
                 <ScalarProperty Name="date_emailsent" ColumnName="date_emailsent" />
@@ -676,6 +775,30 @@
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
+          <EntitySetMapping Name="Mob_Feedback">
+            <EntityTypeMapping TypeName="DB_A4A060_csModel.Mob_Feedback">
+              <MappingFragment StoreEntitySet="Mob_Feedback">
+                <ScalarProperty Name="general_note" ColumnName="general_note" />
+                <ScalarProperty Name="treatment_note" ColumnName="treatment_note" />
+                <ScalarProperty Name="diagnosis" ColumnName="diagnosis" />
+                <ScalarProperty Name="rectal_temperature_measuring_time" ColumnName="rectal_temperature_measuring_time" />
+                <ScalarProperty Name="rectal_temperature" ColumnName="rectal_temperature" />
+                <ScalarProperty Name="visual_symptoms" ColumnName="visual_symptoms" />
+                <ScalarProperty Name="alert_id" ColumnName="alert_id" />
+                <ScalarProperty Name="id" ColumnName="id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Mob_DeviceToken">
+            <EntityTypeMapping TypeName="DB_A4A060_csModel.Mob_DeviceToken">
+              <MappingFragment StoreEntitySet="Mob_DeviceToken">
+                <ScalarProperty Name="device_token" ColumnName="device_token" />
+                <ScalarProperty Name="AspNetUser_ID" ColumnName="AspNetUser_ID" />
+                <ScalarProperty Name="id" ColumnName="id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <FunctionImportMapping FunctionImportName="WaterIntakes_Sum" FunctionName="DB_A4A060_csModel.Store.WaterIntakes_Sum" />
         </EntityContainerMapping>
       </Mapping>
     </edmx:Mappings>

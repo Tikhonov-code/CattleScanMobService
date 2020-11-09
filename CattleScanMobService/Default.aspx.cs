@@ -17,6 +17,7 @@ public partial class _Default : System.Web.UI.Page
 {
     protected void Page_Load(object sender, EventArgs e)
     {
+        //string pp = MD5Hash("Harrop*20");
         string parameters = string.Empty;
         using (var reader = new System.IO.StreamReader(Request.InputStream))
         {
@@ -107,7 +108,7 @@ public partial class _Default : System.Web.UI.Page
                 break;
             case "update_event":
                 if (IsTokenAlive(parameters)) MOB_UpdateEvent(parameters);
-                ReturnTokenWrong("action:cow_details_update -- ");
+                ReturnTokenWrong("action:update_event -- ");
                 break;
             case "delete_event":
                 if (IsTokenAlive(parameters)) MOB_DeleteEvent(parameters);
@@ -121,24 +122,202 @@ public partial class _Default : System.Web.UI.Page
                 if (IsTokenAlive(parameters)) MOB_EventListFeedback(parameters);
                 ReturnTokenWrong("action:list_feedback -- ");
                 break;
-            case "create_feedback":
-                if (IsTokenAlive(parameters)) MOB_EventCreateFeedback(parameters);
-                ReturnTokenWrong("action:create_feedback -- ");
+            case "add_feedback":
+                if (IsTokenAlive(parameters)) MOB_AddFeedback(parameters);
+                ReturnTokenWrong("action:add_feedback -- ");
                 break;
             case "update_feedback":
-                if (IsTokenAlive(parameters)) MOB_EventUpdateFeedback(parameters);
+                if (IsTokenAlive(parameters)) MOB_UpdateFeedback(parameters);
                 ReturnTokenWrong("action:update_feedback -- ");
                 break;
             case "delete_feedback":
-                if (IsTokenAlive(parameters)) MOB_EventDeleteFeedback(parameters);
+                if (IsTokenAlive(parameters)) MOB_DeleteFeedback(parameters);
                 ReturnTokenWrong("action:delete_feedback -- ");
                 break;
+            case "status_alert":
+                if (IsTokenAlive(parameters)) MOB_SetStatusAlert(parameters);
+                ReturnTokenWrong("action:status_alert -- ");
+                break;
+            case "save_device_token":
+                if (IsTokenAlive(parameters)) MOB_SaveDeviceToken(parameters);
+                ReturnTokenWrong("action:save_device_token -- ");
+                break;
+            case "get_intakes":
+                if (IsTokenAlive(parameters)) MOB_GetIntakes(parameters);
+                ReturnTokenWrong("action:get_intakes -- ");
+                break;
             default:
+                SendErrorResponse("wrong request:" + action);
                 break;
         }
     }
 
-    private void MOB_EventDeleteFeedback(string parameters)
+    private void MOB_GetIntakes(string parameters)
+    {
+        JObject Pars_Obj = JObject.Parse(parameters);
+
+        string[] parnames = { "token", "bolus_id", "dt1", "dt2" };
+        IsInputParametersOK("get_intakes", parameters, parnames);
+        //-----Parsing parameters---------------------
+        string token = (string)Pars_Obj.Root["token"];
+        string user_id = GetUserIdByToken(token);
+        if (string.IsNullOrEmpty(user_id))
+        {
+            SendErrorResponse("user was not found");
+        }
+        int bolus_id = Convert.ToInt16((string)Pars_Obj.Root["bolus_id"]);
+        DateTime dt1 = DateTime.Parse((string)Pars_Obj.Root["dt1"]);
+        DateTime dt2 = DateTime.Parse((string)Pars_Obj.Root["dt2"]);
+        //---------------------------------------------------------
+        double? result = 0;
+        try
+        {
+            using (DB_A4A060_csEntities context = new DB_A4A060_csEntities())
+            {
+                //save in database
+                result = context.WaterIntakes_Sum(dt1, dt2, bolus_id, 2).SingleOrDefault().Value;
+            }
+        }
+        catch (Exception ex)
+        {
+            SendErrorResponse("get_intakes: " + ex.Message);
+        }
+        // result preparation-----------------------------------------
+        JObject data = new JObject(
+            new JProperty("status", "ok"),
+            new JProperty("data",
+            new JObject(
+                            new JProperty("sum", result)
+                               )
+                ));
+        SendOKResponse_1(data);
+    }
+
+    private void MOB_SaveDeviceToken(string parameters)
+    {
+        JObject Pars_Obj = JObject.Parse(parameters);
+
+        //-----Parsing parameters---------------------
+        string token = (string)Pars_Obj.Root["token"];
+        string user_id = GetUserIdByToken(token);
+        if (string.IsNullOrEmpty(user_id))
+        {
+            SendErrorResponse("user was not found");
+        }
+
+        string device_token = (string)Pars_Obj.Root["device_token"];
+        //---------------------------------------------------------
+        Mob_DeviceToken result = new Mob_DeviceToken
+        {
+            AspNetUser_ID = user_id,
+            device_token = device_token
+        };
+        try
+        {
+            using (DB_A4A060_csEntities context = new DB_A4A060_csEntities())
+            {
+                //save in database
+                context.Mob_DeviceToken.Add(result);
+                context.SaveChanges();
+            }
+        }
+        catch (Exception ex)
+        {
+            SendErrorResponse("save_device_token: " + ex.Message);
+        }
+        // result preparation-----------------------------------------
+        JObject data = new JObject(
+            new JProperty("status", "ok"),
+            new JProperty("data",
+            new JObject(
+                            new JProperty("token", token),
+                            new JProperty("device_token", device_token)
+                               )
+                ));
+        SendOKResponse_1(data);
+    }
+
+    private void MOB_SetStatusAlert(string parameters)
+    {
+        JObject Pars_Obj = JObject.Parse(parameters);
+        Dictionary<string, string> dictObj = Pars_Obj.ToObject<Dictionary<string, string>>();
+
+        //-----Parsing parameters---------------------
+        string token = dictObj["token"];
+        string user_id = GetUserIdByToken(token);
+        if (string.IsNullOrEmpty(user_id))
+        {
+            SendErrorResponse("user was not found");
+        }
+        int alert_id = Convert.ToInt16(dictObj["alert_id"]);
+        bool? read_null = ParseReadToBool(dictObj["read"]);
+        bool? feedback = ParseReadToBool(dictObj["feedback"]);
+        //---------------------------------------------------------
+        Z_AlertLogs alert = new Z_AlertLogs();
+        try
+        {
+            using (DB_A4A060_csEntities context = new DB_A4A060_csEntities())
+            {
+                alert = context.Z_AlertLogs.Where(x => x.id == alert_id).SingleOrDefault();
+                if (alert != null)
+                {
+                    alert.read = read_null;
+                    alert.feedback = feedback;
+                    context.SaveChanges();
+                }
+                else
+                {
+                    alert = null;
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            SendErrorResponse("status_alert: " + ex.Message);
+        }
+        // result preparation-----------------------------------------
+        if (alert == null)
+        {
+            SendErrorResponse("status_alert: record not found id=" + alert_id);
+        }
+        JObject data = new JObject(
+            new JProperty("status", "ok"),
+            new JProperty("data",
+            new JObject(
+                            new JProperty("alert_id", alert_id),
+                            new JProperty("read", read_null),
+                            new JProperty("feedback", feedback)
+                               )
+                ));
+
+        SendOKResponse_1(data);
+    }
+
+    private bool? ParseReadToBool(string read)
+    {
+        bool? result = false;
+        int readint = 0;
+        if (!int.TryParse(read, out readint))
+        {
+            result = null;
+            return result;
+        }
+        switch (readint)
+        {
+            case 0:
+                result = false;
+                break;
+            case 1:
+                result = true;
+                break;
+            default:
+                result = null;
+                break;
+        }
+        return result;
+    }
+
+    private void MOB_DeleteFeedback(string parameters)
     {
         JObject Pars_Obj = JObject.Parse(parameters);
         Dictionary<string, string> dictObj = Pars_Obj.ToObject<Dictionary<string, string>>();
@@ -153,15 +332,15 @@ public partial class _Default : System.Web.UI.Page
             SendErrorResponse("user was not found");
         }
         //---------------------------------------------------------
-        MOB_EventFeedback result = new MOB_EventFeedback();
+        Mob_Feedback result = new Mob_Feedback();
         try
         {
             using (DB_A4A060_csEntities context = new DB_A4A060_csEntities())
             {
-                result = context.MOB_EventFeedback.Where(x => x.id == id).SingleOrDefault();
+                result = context.Mob_Feedback.Where(x => x.id == id).SingleOrDefault();
                 if (result != null)
                 {
-                    context.MOB_EventFeedback.Remove(result);
+                    context.Mob_Feedback.Remove(result);
                     context.SaveChanges();
                 }
 
@@ -174,7 +353,7 @@ public partial class _Default : System.Web.UI.Page
         // result preparation-----------------------------------------
         if (result == null)
         {
-            SendErrorResponse("delete_feedback: record not found");
+            SendErrorResponse("delete_feedback: record not found id=" + id);
         }
         JObject data = new JObject(
             new JProperty("status", "ok"),
@@ -187,111 +366,118 @@ public partial class _Default : System.Web.UI.Page
         SendOKResponse_1(data);
     }
 
-    private void MOB_EventUpdateFeedback(string parameters)
+    private void MOB_UpdateFeedback(string parameters)
     {
         JObject Pars_Obj = JObject.Parse(parameters);
-        Dictionary<string, string> dictObj = Pars_Obj.ToObject<Dictionary<string, string>>();
-
+       
         //-----Parsing parameters---------------------
-        string token = dictObj["token"];
-        int id = Convert.ToInt16(dictObj["id"]);
-        int vs = Convert.ToInt16(dictObj["visual_symptoms"]);
-        bool visual_symptoms = Convert.ToBoolean(vs);
-        double rectal_temperature = Convert.ToDouble(dictObj["rectal_temperature"]);
-        DateTime rectal_temperature_measuring_time = DateTime.Parse(dictObj["rectal_temperature_measuring_time"]);
-        string treatment_note = dictObj["treatment_note"];
-        string general_note = dictObj["general_note"];
-
+        string token = (string)Pars_Obj.Root["token"];
         string user_id = GetUserIdByToken(token);
         if (string.IsNullOrEmpty(user_id))
         {
             SendErrorResponse("user was not found");
         }
+
+        int id = Convert.ToInt16(Pars_Obj.Root["id"]);
+        int vs = Convert.ToInt16(Pars_Obj.Root["visual_symptoms"]);
+        bool visual_symptoms = Convert.ToBoolean(vs);
+        double rectal_temperature = Convert.ToDouble(Pars_Obj.Root["rectal_temperature"]);
+        DateTime rectal_temperature_measuring_time = DateTime.Parse((string)Pars_Obj.Root["rectal_temperature_measuring_time"]);
+        string treatment_note = (string)Pars_Obj.Root["treatment_note"];
+        string general_note = (string)Pars_Obj.Root["general_note"];
+
+        var diagnosis = Pars_Obj.Root["diagnosis"];
+        string diagnosisStr = string.Empty;
+        foreach (var item in diagnosis)
+        {
+            diagnosisStr += item + ",";
+        }
+        diagnosisStr = diagnosisStr.Substring(0, diagnosisStr.Length - 1);
         //---------------------------------------------------------
-        MOB_EventFeedback result = new MOB_EventFeedback();
+        Mob_Feedback result = new Mob_Feedback();
         try
         {
             using (DB_A4A060_csEntities context = new DB_A4A060_csEntities())
             {
-                result = context.MOB_EventFeedback.Where(x => x.id == id).SingleOrDefault();
-                if (result.id == id)
+                //save in database
+                result = context.Mob_Feedback.Where(x => x.id == id).SingleOrDefault();
+                if (result != null)
                 {
                     result.visual_symptoms = visual_symptoms;
                     result.rectal_temperature = rectal_temperature;
                     result.rectal_temperature_measuring_time = rectal_temperature_measuring_time;
                     result.treatment_note = treatment_note;
                     result.general_note = general_note;
-                    //save data
+                    result.diagnosis = diagnosisStr;
                     context.SaveChanges();
-                }
-                else
-                {
-                    result = null;
                 }
             }
         }
         catch (Exception ex)
         {
-            SendErrorResponse("update_feedback: " + ex.Message);
+            SendErrorResponse("create_feedback: " + ex.Message);
         }
         // result preparation-----------------------------------------
-        if (result == null)
-        {
-            SendErrorResponse("update_feedback: record not found");
-        }
+        if (result == null) SendErrorResponse("update_feedback: no record id=" + id); ;
         JObject data = new JObject(
-                new JProperty("status", "ok"),
-                new JProperty("data",
-                new JObject(
-                                new JProperty("id", result.id),
-                                new JProperty("event_id", result.event_id),
-                                new JProperty("visual_symptoms", result.visual_symptoms),
-                                new JProperty("rectal_temperature", result.rectal_temperature),
-                                new JProperty("rectal_temperature_measuring_time", result.rectal_temperature_measuring_time),
-                                new JProperty("treatment_note", result.treatment_note),
-                                new JProperty("general_note", result.general_note)
-                                   )
-                    ));
-
+            new JProperty("status", "ok"),
+            new JProperty("data",
+            new JObject(
+                            new JProperty("alert_id", result.alert_id),
+                            new JProperty("visual_symptoms", result.visual_symptoms),
+                            new JProperty("rectal_temperature", result.rectal_temperature),
+                            new JProperty("rectal_temperature_measuring_time", result.rectal_temperature_measuring_time),
+                            new JProperty("diagnosis", diagnosis),
+                            new JProperty("treatment_note", result.treatment_note),
+                            new JProperty("general_note", result.general_note)
+                               )
+                ));
         SendOKResponse_1(data);
-
     }
 
-    private void MOB_EventCreateFeedback(string parameters)
+    private void MOB_AddFeedback(string parameters)
     {
+
         JObject Pars_Obj = JObject.Parse(parameters);
-        Dictionary<string, string> dictObj = Pars_Obj.ToObject<Dictionary<string, string>>();
 
         //-----Parsing parameters---------------------
-        string token = dictObj["token"];
-
-        int event_id = Convert.ToInt16(dictObj["event_id"]);
-        int vs = Convert.ToInt16(dictObj["visual_symptoms"]);
-        bool visual_symptoms = Convert.ToBoolean(vs);
-        double rectal_temperature = Convert.ToDouble(dictObj["rectal_temperature"]);
-        DateTime rectal_temperature_measuring_time = DateTime.Parse(dictObj["rectal_temperature_measuring_time"]);
-        string treatment_note = dictObj["treatment_note"];
-        string general_note = dictObj["general_note"];
-
+        string token = (string)Pars_Obj.Root["token"];
         string user_id = GetUserIdByToken(token);
         if (string.IsNullOrEmpty(user_id))
         {
             SendErrorResponse("user was not found");
         }
+
+        int alert_id = Convert.ToInt16(Pars_Obj.Root["alert_id"]);
+        int vs = Convert.ToInt16(Pars_Obj.Root["visual_symptoms"]);
+        bool visual_symptoms = Convert.ToBoolean(vs);
+        double rectal_temperature = Convert.ToDouble(Pars_Obj.Root["rectal_temperature"]);
+        DateTime rectal_temperature_measuring_time = DateTime.Parse((string)Pars_Obj.Root["rectal_temperature_measuring_time"]);
+        string treatment_note = (string)Pars_Obj.Root["treatment_note"];
+        string general_note = (string)Pars_Obj.Root["general_note"];
+
+        var diagnosis = Pars_Obj.Root["diagnosis"];
+        string diagnosisStr = string.Empty;
+        foreach (var item in diagnosis)
+        {
+            diagnosisStr += item + ",";
+        }
+        diagnosisStr = diagnosisStr.Substring(0, diagnosisStr.Length - 1);
         //---------------------------------------------------------
-        MOB_EventFeedback result = new MOB_EventFeedback();
-        result.event_id = event_id;
+        Mob_Feedback result = new Mob_Feedback();
+        result.alert_id = alert_id;
         result.visual_symptoms = visual_symptoms;
         result.rectal_temperature = rectal_temperature;
         result.rectal_temperature_measuring_time = rectal_temperature_measuring_time;
         result.treatment_note = treatment_note;
         result.general_note = general_note;
+        result.diagnosis = diagnosisStr;
         try
         {
             using (DB_A4A060_csEntities context = new DB_A4A060_csEntities())
             {
                 //save in database
-                context.MOB_EventFeedback.Add(result);
+                context.Mob_Feedback.Add(result);
                 context.SaveChanges();
             }
         }
@@ -300,15 +486,16 @@ public partial class _Default : System.Web.UI.Page
             SendErrorResponse("create_feedback: " + ex.Message);
         }
         // result preparation-----------------------------------------
+        ;
         JObject data = new JObject(
             new JProperty("status", "ok"),
             new JProperty("data",
             new JObject(
-                            new JProperty("id", result.id),
-                            new JProperty("event_id", result.event_id),
+                            new JProperty("alert_id", result.alert_id),
                             new JProperty("visual_symptoms", result.visual_symptoms),
                             new JProperty("rectal_temperature", result.rectal_temperature),
                             new JProperty("rectal_temperature_measuring_time", result.rectal_temperature_measuring_time),
+                            new JProperty("diagnosis", diagnosis),
                             new JProperty("treatment_note", result.treatment_note),
                             new JProperty("general_note", result.general_note)
                                )
@@ -621,6 +808,7 @@ public partial class _Default : System.Web.UI.Page
         DateTime Calving_Due_Date = DateTime.Parse(dictObj["calving_due_date"]);
         DateTime Actual_Calving_Date = DateTime.Parse(dictObj["actual_calving_date"]);
         int st = Convert.ToInt16(dictObj["status"]);
+
         bool status = false;
         if (st == 0 || st == 1)
         {
@@ -662,6 +850,8 @@ public partial class _Default : System.Web.UI.Page
         {
             SendErrorResponse("record not found");
         }
+        bool has_unread_alerts = GetCountOfUnreadAlerts(bolus_id);
+
         JObject data = new JObject(
             new JProperty("status", "ok"),
             new JProperty("data",
@@ -669,13 +859,33 @@ public partial class _Default : System.Web.UI.Page
                             new JProperty("bolus_id", result.bolus_id),
                             new JProperty("animal_id", result.animal_id),
                             new JProperty("comments", result.Comments),
+                            new JProperty("age_lactation", result.Age_Lactation),
                             new JProperty("current_stage_of_lactation", result.Current_Stage_Of_Lactation),
-                            new JProperty("has_unread_alerts", result.Calving_Due_Date),
-                            new JProperty("actual_calving_date", result.Actual_Calving_Date)
+                            new JProperty("actual_calving_date", result.Actual_Calving_Date),
+                            new JProperty("status", result.status),
+                            new JProperty("has_unread_alerts", has_unread_alerts)
                                )
                 ));
 
         SendOKResponse_1(data);
+    }
+
+    private bool GetCountOfUnreadAlerts(int bolus_id)
+    {
+        bool result = false;
+        try
+        {
+            using (DB_A4A060_csEntities context = new DB_A4A060_csEntities())
+            {
+                var c = context.Z_AlertLogs.Where(x => x.bolus_id == bolus_id && x.read == false).Count();
+                result = (c > 0) ? true : false;
+            }
+        }
+        catch (Exception)
+        {
+            result = false;
+        }
+        return result;
     }
 
     private void MOB_GetCowDetails(string parameters)
@@ -1534,6 +1744,7 @@ public partial class _Default : System.Web.UI.Page
             {
                 user_id = (from t in context.Mob_Token
                            join u in context.Mob_Users on t.username equals u.email
+                           where t.hashcode == token
                            select new
                            {
                                id = u.AspNetUser_ID
@@ -1736,5 +1947,25 @@ public partial class _Default : System.Web.UI.Page
             throw;
         }
         return result;
+    }
+
+    //General methods
+    private bool IsInputParametersOK(string procname,string parameters, string[] par_name)
+    {
+        JObject Pars_Obj = JObject.Parse(parameters);
+        int par_num = Pars_Obj.Count;
+
+        //1. check parameters number
+        if (Pars_Obj.Count != par_name.Length) SendErrorResponse(procname+": wrong parameters number");
+
+        //2. check parameters existance 
+        foreach (var item in par_name)
+        {
+            if ((string)Pars_Obj.Root[item] == null)
+            {
+                SendErrorResponse(procname + ":" + item + " is null");
+            }
+        }
+        return true;
     }
 }
