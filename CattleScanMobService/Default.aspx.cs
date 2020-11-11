@@ -216,8 +216,17 @@ public partial class _Default : System.Web.UI.Page
         {
             using (DB_A4A060_csEntities context = new DB_A4A060_csEntities())
             {
-                //save in database
-                context.Mob_DeviceToken.Add(result);
+                Mob_DeviceToken dt = context.Mob_DeviceToken.Where(x => x.AspNetUser_ID == result.AspNetUser_ID).SingleOrDefault();
+                if (dt == null)
+                {
+                    //save in database
+                    context.Mob_DeviceToken.Add(result);
+
+                }
+                else
+                {
+                    dt.device_token = result.device_token;
+                }
                 context.SaveChanges();
             }
         }
@@ -231,7 +240,7 @@ public partial class _Default : System.Web.UI.Page
             new JProperty("data",
             new JObject(
                             new JProperty("token", token),
-                            new JProperty("device_token", device_token)
+                            new JProperty("device_token", result.device_token)
                                )
                 ));
         SendOKResponse_1(data);
@@ -369,7 +378,7 @@ public partial class _Default : System.Web.UI.Page
     private void MOB_UpdateFeedback(string parameters)
     {
         JObject Pars_Obj = JObject.Parse(parameters);
-       
+
         //-----Parsing parameters---------------------
         string token = (string)Pars_Obj.Root["token"];
         string user_id = GetUserIdByToken(token);
@@ -1950,13 +1959,13 @@ public partial class _Default : System.Web.UI.Page
     }
 
     //General methods
-    private bool IsInputParametersOK(string procname,string parameters, string[] par_name)
+    private bool IsInputParametersOK(string procname, string parameters, string[] par_name)
     {
         JObject Pars_Obj = JObject.Parse(parameters);
         int par_num = Pars_Obj.Count;
 
         //1. check parameters number
-        if (Pars_Obj.Count != par_name.Length) SendErrorResponse(procname+": wrong parameters number");
+        if (Pars_Obj.Count != par_name.Length) SendErrorResponse(procname + ": wrong parameters number");
 
         //2. check parameters existance 
         foreach (var item in par_name)
