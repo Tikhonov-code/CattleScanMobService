@@ -818,6 +818,7 @@ public partial class _Default : System.Web.UI.Page
         DateTime Calving_Due_Date = DateTime.Parse(dictObj["calving_due_date"]);
         DateTime Actual_Calving_Date = DateTime.Parse(dictObj["actual_calving_date"]);
         int st = Convert.ToInt16(dictObj["status"]);
+        int current_lactation = Convert.ToInt16(dictObj["current_lactation"]);
 
         bool status = false;
         if (st == 0 || st == 1)
@@ -844,6 +845,7 @@ public partial class _Default : System.Web.UI.Page
                     result.Comments = Comments;
                     result.Calving_Due_Date = Calving_Due_Date;
                     result.Actual_Calving_Date = Actual_Calving_Date;
+                    result.current_lactation = current_lactation;
                     result.status = status;
 
                     //save in database
@@ -872,6 +874,7 @@ public partial class _Default : System.Web.UI.Page
                             new JProperty("age_lactation", result.Age_Lactation),
                             new JProperty("current_stage_of_lactation", result.Current_Stage_Of_Lactation),
                             new JProperty("actual_calving_date", result.Actual_Calving_Date),
+                            new JProperty("current_lactation", result.current_lactation),
                             new JProperty("status", result.status),
                             new JProperty("has_unread_alerts", has_unread_alerts)
                                )
@@ -938,7 +941,9 @@ public partial class _Default : System.Web.UI.Page
                             new JProperty("name", p.name),
                             new JProperty("current_stage_of_lactation", p.current_stage_of_lactation),
                             new JProperty("has_unread_alerts", p.has_unread_alerts),
-                            new JProperty("lactation_day", p.lactation_day)
+                            new JProperty("lactation_day", p.lactation_day),
+                            new JProperty("current_lactation", p.current_lactation),
+                            new JProperty("status", p.status)
                                )
                 )));
 
@@ -1711,15 +1716,22 @@ public partial class _Default : System.Web.UI.Page
             SendErrorResponse("MOB_GetFarmCowsInfo -- " + ex.Message);
         }
         //-------------------------------------------------------------------
-        JObject data = new JObject(
-            new JProperty("status", "ok"),
-             new JProperty("data",
-            new JObject(
-                        from p in result
-                        select
-                            new JProperty(p.lactname, p.lactnum)
+        var totalval = result.Where(x => x.lactname == "total").SingleOrDefault().lactnum;
+        var undermonval = result.Where(x => x.lactname == "undermon").SingleOrDefault().lactnum;
+        var result0 = result.Where(x => x.lactname != "total" && x.lactname != "undermon");
 
-                        )));
+        JObject data = new JObject(
+        new JProperty("status", "ok"),
+        new JProperty("data",
+            new JObject(
+                new JProperty("total", totalval),
+                new JProperty("undermon", undermonval),
+                new JProperty("lactation_stage",
+                    new JArray(from p in result0 select new JObject(new JProperty(p.lactname, p.lactnum))
+                        )
+                ))
+        ));
+
         SendOKResponse_1(data);
     }
 

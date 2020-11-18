@@ -25,6 +25,7 @@ public partial class Bolu
     public Nullable<System.DateTime> Calving_Due_Date { get; set; }
     public Nullable<System.DateTime> Actual_Calving_Date { get; set; }
     public bool status { get; set; }
+    public Nullable<int> current_lactation { get; set; }
 }
 
 public partial class Farm
@@ -212,6 +213,8 @@ public partial class MOB_GetCowDetails_Result
     public string current_stage_of_lactation { get; set; }
     public Nullable<bool> has_unread_alerts { get; set; }
     public string lactation_day { get; set; }
+    public Nullable<int> current_lactation { get; set; }
+    public bool status { get; set; }
 }
 
 public partial class MOB_GetFarmCowsInfo_Result

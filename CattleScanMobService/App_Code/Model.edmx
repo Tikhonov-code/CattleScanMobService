@@ -22,6 +22,7 @@
           <Property Name="Calving_Due_Date" Type="datetime" />
           <Property Name="Actual_Calving_Date" Type="datetime" />
           <Property Name="status" Type="bit" Nullable="false" />
+          <Property Name="current_lactation" Type="int" />
         </EntityType>
         <EntityType Name="Farms">
           <Key>
@@ -305,9 +306,6 @@
             <Parameter Name="total_pages" Mode="InOut" Type="Int32" />
           </FunctionImport>
           <EntitySet Name="Bolus" EntityType="DB_A4A060_csModel.Bolu" />
-          <FunctionImport Name="MOB_GetCowDetails" ReturnType="Collection(DB_A4A060_csModel.MOB_GetCowDetails_Result)">
-          <Parameter Name="bolus_id" Mode="In" Type="Int32" />
-          </FunctionImport>
           <EntitySet Name="MOB_EventFeedback" EntityType="DB_A4A060_csModel.MOB_EventFeedback" />
           <EntitySet Name="Mob_Events" EntityType="DB_A4A060_csModel.Mob_Events" />
           <EntitySet Name="Mob_Feedback" EntityType="DB_A4A060_csModel.Mob_Feedback" />
@@ -321,6 +319,9 @@
             <Parameter Name="dt2" Mode="In" Type="DateTime" />
             <Parameter Name="bolus_id" Mode="In" Type="Int32" />
             <Parameter Name="wi_calbr" Mode="In" Type="Double" />
+          </FunctionImport>
+          <FunctionImport Name="MOB_GetCowDetails" ReturnType="Collection(DB_A4A060_csModel.MOB_GetCowDetails_Result)">
+            <Parameter Name="bolus_id" Mode="In" Type="Int32" />
           </FunctionImport>
         </EntityContainer>
         <EntityType Name="Mob_Users">
@@ -464,16 +465,8 @@
           <Property Name="Calving_Due_Date" Type="DateTime" Precision="3" />
           <Property Name="Actual_Calving_Date" Type="DateTime" Precision="3" />
           <Property Name="status" Type="Boolean" Nullable="false" />
+          <Property Name="current_lactation" Type="Int32" />
         </EntityType>
-        <ComplexType Name="MOB_GetCowDetails_Result">
-          <Property Type="Int32" Name="bolus_id" Nullable="false" />
-          <Property Type="Int32" Name="animal_id" Nullable="true" />
-          <Property Type="String" Name="name" Nullable="true" MaxLength="15" />
-          <Property Type="String" Name="lastdate" Nullable="true" MaxLength="30" />
-          <Property Type="String" Name="current_stage_of_lactation" Nullable="true" MaxLength="10" />
-          <Property Type="Boolean" Name="has_unread_alerts" Nullable="true" />
-          <Property Type="String" Name="lactation_day" Nullable="true" MaxLength="14" />
-        </ComplexType>
         <EntityType Name="MOB_EventFeedback">
           <Key>
             <PropertyRef Name="id" />
@@ -533,6 +526,17 @@
           <Property Name="AspNetUser_ID" Type="String" MaxLength="128" FixedLength="false" Unicode="true" />
           <Property Name="device_token" Type="String" Nullable="false" MaxLength="164" FixedLength="false" Unicode="true" />
         </EntityType>
+        <ComplexType Name="MOB_GetCowDetails_Result">
+          <Property Type="Int32" Name="bolus_id" Nullable="false" />
+          <Property Type="Int32" Name="animal_id" Nullable="true" />
+          <Property Type="String" Name="name" Nullable="true" MaxLength="15" />
+          <Property Type="String" Name="lastdate" Nullable="true" MaxLength="30" />
+          <Property Type="String" Name="current_stage_of_lactation" Nullable="true" MaxLength="10" />
+          <Property Type="Boolean" Name="has_unread_alerts" Nullable="true" />
+          <Property Type="String" Name="lactation_day" Nullable="true" MaxLength="14" />
+          <Property Type="Int32" Name="current_lactation" Nullable="true" />
+          <Property Type="Boolean" Name="status" Nullable="false" />
+        </ComplexType>
       </Schema>
     </edmx:ConceptualModels>
     <!-- C-S mapping content -->
@@ -722,6 +726,7 @@
           <EntitySetMapping Name="Bolus">
             <EntityTypeMapping TypeName="DB_A4A060_csModel.Bolu">
               <MappingFragment StoreEntitySet="Bolus">
+                <ScalarProperty Name="current_lactation" ColumnName="current_lactation" />
                 <ScalarProperty Name="status" ColumnName="status" />
                 <ScalarProperty Name="Actual_Calving_Date" ColumnName="Actual_Calving_Date" />
                 <ScalarProperty Name="Calving_Due_Date" ColumnName="Calving_Due_Date" />
@@ -738,19 +743,6 @@
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
-          <FunctionImportMapping FunctionImportName="MOB_GetCowDetails" FunctionName="DB_A4A060_csModel.Store.MOB_GetCowDetails">
-            <ResultMapping>
-              <ComplexTypeMapping TypeName="DB_A4A060_csModel.MOB_GetCowDetails_Result">
-                <ScalarProperty Name="bolus_id" ColumnName="bolus_id" />
-                <ScalarProperty Name="animal_id" ColumnName="animal_id" />
-                <ScalarProperty Name="name" ColumnName="name" />
-                <ScalarProperty Name="lastdate" ColumnName="lastdate" />
-                <ScalarProperty Name="current_stage_of_lactation" ColumnName="current_stage_of_lactation" />
-                <ScalarProperty Name="has_unread_alerts" ColumnName="has_unread_alerts" />
-                <ScalarProperty Name="lactation_day" ColumnName="lactation_day" />
-              </ComplexTypeMapping>
-            </ResultMapping>
-          </FunctionImportMapping>
           <EntitySetMapping Name="MOB_EventFeedback">
             <EntityTypeMapping TypeName="DB_A4A060_csModel.MOB_EventFeedback">
               <MappingFragment StoreEntitySet="MOB_EventFeedback">
@@ -799,6 +791,21 @@
             </EntityTypeMapping>
           </EntitySetMapping>
           <FunctionImportMapping FunctionImportName="WaterIntakes_Sum" FunctionName="DB_A4A060_csModel.Store.WaterIntakes_Sum" />
+          <FunctionImportMapping FunctionImportName="MOB_GetCowDetails" FunctionName="DB_A4A060_csModel.Store.MOB_GetCowDetails">
+            <ResultMapping>
+              <ComplexTypeMapping TypeName="DB_A4A060_csModel.MOB_GetCowDetails_Result">
+                <ScalarProperty Name="bolus_id" ColumnName="bolus_id" />
+                <ScalarProperty Name="animal_id" ColumnName="animal_id" />
+                <ScalarProperty Name="name" ColumnName="name" />
+                <ScalarProperty Name="lastdate" ColumnName="lastdate" />
+                <ScalarProperty Name="current_stage_of_lactation" ColumnName="current_stage_of_lactation" />
+                <ScalarProperty Name="has_unread_alerts" ColumnName="has_unread_alerts" />
+                <ScalarProperty Name="lactation_day" ColumnName="lactation_day" />
+                <ScalarProperty Name="current_lactation" ColumnName="current_lactation" />
+                <ScalarProperty Name="status" ColumnName="status" />
+              </ComplexTypeMapping>
+            </ResultMapping>
+          </FunctionImportMapping>
         </EntityContainerMapping>
       </Mapping>
     </edmx:Mappings>

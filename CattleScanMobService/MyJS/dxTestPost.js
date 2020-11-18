@@ -227,7 +227,7 @@ $(function () {
             switch (e.itemData.query) {
                 case "cow_details":
                     var data = {};
-                    data.bolus_id = 128;
+                    data.bolus_id = 11;
                     data.token = $("#token").dxTextBox("instance").option('value');
                     DataPostWithParameters("cow_details", data);
                     break;
@@ -236,11 +236,12 @@ $(function () {
                     data.token = $("#token").dxTextBox("instance").option('value');
                     data.bolus_id = 11;
                     data.age_lactation = 24;
-                    data.current_stage_of_lactation = 'dry';
+                    data.current_stage_of_lactation = 'open';
                     data.comments = 'new comment 777777777';
                     data.calving_due_date = '2020-11-17';
                     data.actual_calving_date = '2020-12-03';
-                    data.status = 0;
+                    data.current_lactation = 3;
+                    data.status = 1;
 
                     DataPostWithParameters("cow_details_update", data);
                     break;

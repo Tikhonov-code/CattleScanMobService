@@ -208,15 +208,6 @@ public partial class DB_A4A060_csEntities : DbContext
         return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<MOB_Get_AlertListByUserID_Result>("MOB_Get_AlertListByUserID", user_idParameter, bolus_idParameter, pageParameter, total_pages);
     }
 
-    public virtual ObjectResult<MOB_GetCowDetails_Result> MOB_GetCowDetails(Nullable<int> bolus_id)
-    {
-        var bolus_idParameter = bolus_id.HasValue ?
-            new ObjectParameter("bolus_id", bolus_id) :
-            new ObjectParameter("bolus_id", typeof(int));
-
-        return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<MOB_GetCowDetails_Result>("MOB_GetCowDetails", bolus_idParameter);
-    }
-
     public virtual ObjectResult<Nullable<double>> WaterIntakes_Sum(Nullable<System.DateTime> dt1, Nullable<System.DateTime> dt2, Nullable<int> bolus_id, Nullable<double> wi_calbr)
     {
         var dt1Parameter = dt1.HasValue ?
@@ -236,5 +227,14 @@ public partial class DB_A4A060_csEntities : DbContext
             new ObjectParameter("wi_calbr", typeof(double));
 
         return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<Nullable<double>>("WaterIntakes_Sum", dt1Parameter, dt2Parameter, bolus_idParameter, wi_calbrParameter);
+    }
+
+    public virtual ObjectResult<MOB_GetCowDetails_Result> MOB_GetCowDetails(Nullable<int> bolus_id)
+    {
+        var bolus_idParameter = bolus_id.HasValue ?
+            new ObjectParameter("bolus_id", bolus_id) :
+            new ObjectParameter("bolus_id", typeof(int));
+
+        return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<MOB_GetCowDetails_Result>("MOB_GetCowDetails", bolus_idParameter);
     }
 }
