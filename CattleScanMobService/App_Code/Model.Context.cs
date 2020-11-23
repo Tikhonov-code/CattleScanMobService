@@ -151,15 +151,6 @@ public partial class DB_A4A060_csEntities : DbContext
         return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<WaterIntakes_sig_Result>("WaterIntakes_sig", dt1Parameter, dt2Parameter, bolus_idParameter, wi_calbrParameter);
     }
 
-    public virtual ObjectResult<MOB_GET_AnimalListByUserID_Result> MOB_GET_AnimalListByUserID(string user_id)
-    {
-        var user_idParameter = user_id != null ?
-            new ObjectParameter("user_id", user_id) :
-            new ObjectParameter("user_id", typeof(string));
-
-        return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<MOB_GET_AnimalListByUserID_Result>("MOB_GET_AnimalListByUserID", user_idParameter);
-    }
-
     public virtual ObjectResult<MOB_GetFarmCowsInfo_Result> MOB_GetFarmCowsInfo(string user_id)
     {
         var user_idParameter = user_id != null ?
@@ -236,5 +227,14 @@ public partial class DB_A4A060_csEntities : DbContext
             new ObjectParameter("bolus_id", typeof(int));
 
         return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<MOB_GetCowDetails_Result>("MOB_GetCowDetails", bolus_idParameter);
+    }
+
+    public virtual ObjectResult<MOB_GET_AnimalListByUserID_Result> MOB_GET_AnimalListByUserID(string user_id)
+    {
+        var user_idParameter = user_id != null ?
+            new ObjectParameter("user_id", user_id) :
+            new ObjectParameter("user_id", typeof(string));
+
+        return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<MOB_GET_AnimalListByUserID_Result>("MOB_GET_AnimalListByUserID", user_idParameter);
     }
 }

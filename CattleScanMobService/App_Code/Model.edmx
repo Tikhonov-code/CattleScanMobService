@@ -37,6 +37,8 @@
           <Property Name="Emails" Type="nvarchar(max)" />
           <Property Name="PhoneStatus" Type="nvarchar(max)" />
           <Property Name="EmailStatus" Type="nvarchar(max)" />
+          <Property Name="StationId" Type="int" />
+          <Property Name="vas_dairy_id" Type="int" />
         </EntityType>
         <EntityType Name="FermerComments">
           <Key>
@@ -285,9 +287,6 @@
           </FunctionImport>
           <EntitySet Name="MeasDatas" EntityType="DB_A4A060_csModel.MeasData" />
           <EntitySet Name="FermerComments" EntityType="DB_A4A060_csModel.FermerComment" />
-          <FunctionImport Name="MOB_GET_AnimalListByUserID" ReturnType="Collection(DB_A4A060_csModel.MOB_GET_AnimalListByUserID_Result)">
-          <Parameter Name="user_id" Mode="In" Type="String" />
-          </FunctionImport>
           <FunctionImport Name="MOB_GetFarmCowsInfo" ReturnType="Collection(DB_A4A060_csModel.MOB_GetFarmCowsInfo_Result)">
           <Parameter Name="user_id" Mode="In" Type="String" />
           </FunctionImport>
@@ -321,7 +320,10 @@
             <Parameter Name="wi_calbr" Mode="In" Type="Double" />
           </FunctionImport>
           <FunctionImport Name="MOB_GetCowDetails" ReturnType="Collection(DB_A4A060_csModel.MOB_GetCowDetails_Result)">
-            <Parameter Name="bolus_id" Mode="In" Type="Int32" />
+          <Parameter Name="bolus_id" Mode="In" Type="Int32" />
+          </FunctionImport>
+          <FunctionImport Name="MOB_GET_AnimalListByUserID" ReturnType="Collection(DB_A4A060_csModel.MOB_GET_AnimalListByUserID_Result)">
+            <Parameter Name="user_id" Mode="In" Type="String" />
           </FunctionImport>
         </EntityContainer>
         <EntityType Name="Mob_Users">
@@ -357,6 +359,8 @@
           <Property Name="Emails" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
           <Property Name="PhoneStatus" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
           <Property Name="EmailStatus" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="StationId" Type="Int32" />
+          <Property Name="vas_dairy_id" Type="Int32" />
         </EntityType>
         <ComplexType Name="ChartsXY_temp_Result">
           <Property Type="String" Name="t" Nullable="true" MaxLength="21" />
@@ -394,10 +398,6 @@
           <Property Name="comment" Type="String" MaxLength="300" FixedLength="false" Unicode="true" />
           <Property Name="status_read" Type="Boolean" Nullable="false" />
         </EntityType>
-        <ComplexType Name="MOB_GET_AnimalListByUserID_Result">
-          <Property Type="Int32" Name="bolus_id" Nullable="false" />
-          <Property Type="Int32" Name="animal_id" Nullable="true" />
-        </ComplexType>
         <ComplexType Name="MOB_GetFarmCowsInfo_Result">
           <Property Type="Int32" Name="lactnum" Nullable="true" />
           <Property Type="String" Name="lactname" Nullable="true" MaxLength="10" />
@@ -537,6 +537,11 @@
           <Property Type="Int32" Name="current_lactation" Nullable="true" />
           <Property Type="Boolean" Name="status" Nullable="false" />
         </ComplexType>
+        <ComplexType Name="MOB_GET_AnimalListByUserID_Result">
+          <Property Type="Int32" Name="bolus_id" Nullable="false" />
+          <Property Type="Int32" Name="animal_id" Nullable="true" />
+          <Property Type="Boolean" Name="has_unread_alerts" Nullable="true" />
+        </ComplexType>
       </Schema>
     </edmx:ConceptualModels>
     <!-- C-S mapping content -->
@@ -599,6 +604,8 @@
           <EntitySetMapping Name="Farms">
             <EntityTypeMapping TypeName="DB_A4A060_csModel.Farm">
               <MappingFragment StoreEntitySet="Farms">
+                <ScalarProperty Name="vas_dairy_id" ColumnName="vas_dairy_id" />
+                <ScalarProperty Name="StationId" ColumnName="StationId" />
                 <ScalarProperty Name="EmailStatus" ColumnName="EmailStatus" />
                 <ScalarProperty Name="PhoneStatus" ColumnName="PhoneStatus" />
                 <ScalarProperty Name="Emails" ColumnName="Emails" />
@@ -657,14 +664,6 @@
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
-          <FunctionImportMapping FunctionImportName="MOB_GET_AnimalListByUserID" FunctionName="DB_A4A060_csModel.Store.MOB_GET_AnimalListByUserID">
-            <ResultMapping>
-              <ComplexTypeMapping TypeName="DB_A4A060_csModel.MOB_GET_AnimalListByUserID_Result">
-                <ScalarProperty Name="bolus_id" ColumnName="bolus_id" />
-                <ScalarProperty Name="animal_id" ColumnName="animal_id" />
-              </ComplexTypeMapping>
-            </ResultMapping>
-          </FunctionImportMapping>
           <FunctionImportMapping FunctionImportName="MOB_GetFarmCowsInfo" FunctionName="DB_A4A060_csModel.Store.MOB_GetFarmCowsInfo" >
             <ResultMapping>
               <ComplexTypeMapping TypeName="DB_A4A060_csModel.MOB_GetFarmCowsInfo_Result">
@@ -803,6 +802,15 @@
                 <ScalarProperty Name="lactation_day" ColumnName="lactation_day" />
                 <ScalarProperty Name="current_lactation" ColumnName="current_lactation" />
                 <ScalarProperty Name="status" ColumnName="status" />
+              </ComplexTypeMapping>
+            </ResultMapping>
+          </FunctionImportMapping>
+          <FunctionImportMapping FunctionImportName="MOB_GET_AnimalListByUserID" FunctionName="DB_A4A060_csModel.Store.MOB_GET_AnimalListByUserID">
+            <ResultMapping>
+              <ComplexTypeMapping TypeName="DB_A4A060_csModel.MOB_GET_AnimalListByUserID_Result">
+                <ScalarProperty Name="bolus_id" ColumnName="bolus_id" />
+                <ScalarProperty Name="animal_id" ColumnName="animal_id" />
+                <ScalarProperty Name="has_unread_alerts" ColumnName="has_unread_alerts" />
               </ComplexTypeMapping>
             </ResultMapping>
           </FunctionImportMapping>

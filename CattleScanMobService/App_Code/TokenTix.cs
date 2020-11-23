@@ -15,7 +15,7 @@ public class TokenTix
         this.hashcode = ComputeSha256Hash();
         //2. set token properties
         this.username = _username;
-        this.datetime_exp = DateTime.UtcNow.AddMinutes(30);
+        this.datetime_exp = DateTime.UtcNow.AddDays(30);
         //3. save token in database
         //SaveToken();
 
@@ -28,7 +28,7 @@ public class TokenTix
             using (DB_A4A060_csEntities context = new DB_A4A060_csEntities())
             {
                 Mob_Token mt = new Mob_Token();
-                mt.datetime_exp = DateTime.UtcNow.AddDays(1);
+                mt.datetime_exp = DateTime.UtcNow.AddDays(30);
                 mt.hashcode = this.hashcode;
                 mt.username = this.username;
 

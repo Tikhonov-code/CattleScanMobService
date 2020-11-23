@@ -1121,7 +1121,8 @@ public partial class _Default : System.Web.UI.Page
                             from p in result
                             select new JObject(
                                 new JProperty("animal_id", p.animal_id),
-                                new JProperty("bolus_id", p.bolus_id))
+                                new JProperty("bolus_id", p.bolus_id),
+                                 new JProperty("has_unread_alerts", p.has_unread_alerts))
                                )
                 ));
         SendOKResponse_1(data);

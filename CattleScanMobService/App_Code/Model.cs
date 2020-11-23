@@ -39,6 +39,8 @@ public partial class Farm
     public string Emails { get; set; }
     public string PhoneStatus { get; set; }
     public string EmailStatus { get; set; }
+    public Nullable<int> StationId { get; set; }
+    public Nullable<int> vas_dairy_id { get; set; }
 }
 
 public partial class FermerComment
@@ -202,6 +204,7 @@ public partial class MOB_GET_AnimalListByUserID_Result
 {
     public int bolus_id { get; set; }
     public Nullable<int> animal_id { get; set; }
+    public Nullable<bool> has_unread_alerts { get; set; }
 }
 
 public partial class MOB_GetCowDetails_Result
